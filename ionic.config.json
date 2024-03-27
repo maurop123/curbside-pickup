@@ -1,0 +1,7 @@
+{
+  "name": "curbside-pickup",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}

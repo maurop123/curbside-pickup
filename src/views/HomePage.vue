@@ -14,25 +14,33 @@
 			</ion-header>
 
 			<div id="container">
-				<strong>Ready to create an app?</strong>
-				<p>
-					Start with Ionic
-					<a
-						target="_blank"
-						rel="noopener noreferrer"
-						href="https://ionicframework.com/docs/components"
-						>UI Components</a
-					>
-				</p>
+				<div id="map" ref="map" />
 			</div>
 		</ion-content>
 	</ion-page>
 </template>
 
 <script setup lang="ts">
+	import { ref } from 'vue'
+	import { onMounted, onUpdated } from 'vue'
 	import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
+	import L from 'leaflet'
+	console.log('leaflet', L)
+	import 'leaflet/dist/leaflet.css'
 
 	const navTitle = 'Curbside Pickup'
+
+	const map = ref(null)
+	onMounted(() => {
+		console.log('map', map)
+		const LMap = L.map(map.value).setView([51.505, -0.09], 13)
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(LMap)
+	})
+
+	onUpdated(() => {})
 </script>
 
 <style scoped>
@@ -41,6 +49,12 @@
 		font-weight: 400;
 		font-style: normal;
 		font-size: 2rem;
+	}
+
+	#map {
+		height: 400px;
+		width: 600px;
+		border: 1px solid black;
 	}
 
 	/* Default */

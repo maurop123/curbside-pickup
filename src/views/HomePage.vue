@@ -21,26 +21,28 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
+	import { ref, watch } from 'vue'
 	import { onMounted, onUpdated } from 'vue'
 	import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
 	import L from 'leaflet'
-	console.log('leaflet', L)
 	import 'leaflet/dist/leaflet.css'
 
 	const navTitle = 'Curbside Pickup'
 
 	const map = ref(null)
+	let LMap
 	onMounted(() => {
-		console.log('map', map)
-		const LMap = L.map(map.value).setView([51.505, -0.09], 13)
+		// Set Map
+		LMap = L.map(map.value).setView([39.73915, -104.9847], 13)
 		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		}).addTo(LMap)
-	})
 
-	onUpdated(() => {})
+		// Fix map loadout
+		setTimeout(() => {
+			LMap.invalidateSize()
+		}, 100)
+	})
 </script>
 
 <style scoped>

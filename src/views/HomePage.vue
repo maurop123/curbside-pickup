@@ -16,6 +16,15 @@
 			<div id="container">
 				<div id="map" ref="map" />
 			</div>
+
+			<!-- Post Fab -->
+			<div>
+				<ion-fab>
+					<ion-fab-button>
+						<ion-icon :icon="addIcon" />
+					</ion-fab-button>
+				</ion-fab>
+			</div>
 		</ion-content>
 	</ion-page>
 </template>
@@ -24,6 +33,8 @@
 	import { ref, watch } from 'vue'
 	import { onMounted, onUpdated } from 'vue'
 	import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
+	import { IonFab, IonFabButton, IonIcon } from '@ionic/vue'
+	import { add } from 'ionicons/icons'
 	import L from 'leaflet'
 	import 'leaflet/dist/leaflet.css'
 
@@ -43,6 +54,8 @@
 			LMap.invalidateSize()
 		}, 100)
 	})
+
+	const addIcon = ref(add)
 </script>
 
 <style scoped>
@@ -57,34 +70,5 @@
 		height: 400px;
 		width: 600px;
 		border: 1px solid black;
-	}
-
-	/* Default */
-	#container {
-		text-align: center;
-
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 50%;
-		transform: translateY(-50%);
-	}
-
-	#container strong {
-		font-size: 20px;
-		line-height: 26px;
-	}
-
-	#container p {
-		font-size: 16px;
-		line-height: 22px;
-
-		color: #8c8c8c;
-
-		margin: 0;
-	}
-
-	#container a {
-		text-decoration: none;
 	}
 </style>

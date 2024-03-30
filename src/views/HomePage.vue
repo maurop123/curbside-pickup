@@ -115,11 +115,4 @@
 	.flex {
 		display: flex;
 	}
-
-	round-button {
-		button {
-			padding-left: 0;
-			padding-right: 0;
-		}
-	}
 </style>

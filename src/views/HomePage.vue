@@ -1,14 +1,14 @@
 <template>
 	<ion-page>
 		<ion-header :translucent="true">
-			<ion-toolbar>
+			<ion-toolbar class="cu-toolbar">
 				<ion-title>{{ navTitle }}</ion-title>
 			</ion-toolbar>
 		</ion-header>
 
 		<ion-content :fullscreen="true">
 			<ion-header collapse="condense">
-				<ion-toolbar>
+				<ion-toolbar class="cu-toolbar">
 					<ion-title size="large">{{ navTitle }}</ion-title>
 				</ion-toolbar>
 			</ion-header>
@@ -18,7 +18,7 @@
 			</div>
 
 			<!-- Post Fab -->
-			<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+			<ion-fab slot="fixed" vertical="bottom" horizontal="end" class="m-0.5">
 				<ion-fab-button id="new-post">
 					<ion-icon :icon="addIcon" />
 				</ion-fab-button>
@@ -27,13 +27,13 @@
 			<!-- Modal -->
 			<ion-modal ref="modal" trigger="new-post">
 				<ion-header>
-					<ion-toolbar class="ion-justify-content-between flex">
-						<ion-grid>
+					<ion-toolbar class="cu-toolbar">
+						<ion-grid class="p-0">
 							<ion-row>
-								<ion-col size="10">
+								<ion-col size="10" class="p-0">
 									<ion-title> New Post </ion-title>
 								</ion-col>
-								<ion-col size="2">
+								<ion-col size="2" class="text-right pt-2 pr-2">
 									<ion-icon
 										:icon="closeIcon"
 										size="large"
@@ -87,32 +87,23 @@
 </script>
 
 <style scoped>
-	ion-page {
-		height: 100%;
+	.cu-toolbar {
+		ion-title {
+			font-family: 'Lilita One', sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 2rem;
+			margin: 0 -0.5rem;
+		}
 	}
 
-	/*ion-fab {*/
-	/*position: fixed;*/
-	/*bottom: 0;*/
-	/*right: 0;*/
-	/*margin: 0.7rem;*/
-	/*}*/
-
-	ion-title {
-		font-family: 'Lilita One', sans-serif;
-		font-weight: 400;
-		font-style: normal;
-		font-size: 2rem;
-		margin: 0 -0.5rem;
+	ion-page {
+		height: 100%;
 	}
 
 	#map {
 		height: 400px;
 		width: 600px;
 		border: 1px solid black;
-	}
-
-	.flex {
-		display: flex;
 	}
 </style>

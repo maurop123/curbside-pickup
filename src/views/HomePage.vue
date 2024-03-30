@@ -18,13 +18,33 @@
 			</div>
 
 			<!-- Post Fab -->
-			<div>
-				<ion-fab>
-					<ion-fab-button>
-						<ion-icon :icon="addIcon" />
-					</ion-fab-button>
-				</ion-fab>
-			</div>
+			<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+				<ion-fab-button id="new-post">
+					<ion-icon :icon="addIcon" />
+				</ion-fab-button>
+			</ion-fab>
+
+			<!-- Modal -->
+			<ion-modal ref="modal" trigger="new-post">
+				<ion-header>
+					<ion-toolbar class="ion-justify-content-between flex">
+						<ion-grid>
+							<ion-row>
+								<ion-col size="10">
+									<ion-title> New Post </ion-title>
+								</ion-col>
+								<ion-col size="2">
+									<ion-icon
+										:icon="closeIcon"
+										size="large"
+										@click="closeModal()"
+									></ion-icon>
+								</ion-col>
+							</ion-row>
+						</ion-grid>
+					</ion-toolbar>
+				</ion-header>
+			</ion-modal>
 		</ion-content>
 	</ion-page>
 </template>
@@ -33,8 +53,9 @@
 	import { ref, watch } from 'vue'
 	import { onMounted, onUpdated } from 'vue'
 	import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
-	import { IonFab, IonFabButton, IonIcon } from '@ionic/vue'
-	import { add } from 'ionicons/icons'
+	import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
+	import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
+	import { add, close } from 'ionicons/icons'
 	import L from 'leaflet'
 	import 'leaflet/dist/leaflet.css'
 
@@ -56,19 +77,49 @@
 	})
 
 	const addIcon = ref(add)
+	const closeIcon = ref(close)
+
+	const modal = ref(null)
+	function closeModal() {
+		console.log('close')
+		modal.value.$el.dismiss(null, 'cancel')
+	}
 </script>
 
 <style scoped>
+	ion-page {
+		height: 100%;
+	}
+
+	/*ion-fab {*/
+	/*position: fixed;*/
+	/*bottom: 0;*/
+	/*right: 0;*/
+	/*margin: 0.7rem;*/
+	/*}*/
+
 	ion-title {
 		font-family: 'Lilita One', sans-serif;
 		font-weight: 400;
 		font-style: normal;
 		font-size: 2rem;
+		margin: 0 -0.5rem;
 	}
 
 	#map {
 		height: 400px;
 		width: 600px;
 		border: 1px solid black;
+	}
+
+	.flex {
+		display: flex;
+	}
+
+	round-button {
+		button {
+			padding-left: 0;
+			padding-right: 0;
+		}
 	}
 </style>

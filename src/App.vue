@@ -7,3 +7,10 @@
 <script setup lang="ts">
 	import { IonApp, IonRouterOutlet } from '@ionic/vue'
 </script>
+
+<style scoped>
+	ion-app {
+		max-width: 440px;
+		margin: 0 auto;
+	}
+</style>

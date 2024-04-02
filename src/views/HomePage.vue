@@ -31,7 +31,7 @@
 						<ion-grid class="p-0">
 							<ion-row>
 								<ion-col size="10" class="p-0">
-									<ion-title> New Post </ion-title>
+									<ion-title> New Posting </ion-title>
 								</ion-col>
 								<ion-col size="2" class="text-right pt-2 pr-2">
 									<ion-icon
@@ -44,6 +44,7 @@
 						</ion-grid>
 					</ion-toolbar>
 				</ion-header>
+				<NewPostContent />
 			</ion-modal>
 		</ion-content>
 	</ion-page>
@@ -58,6 +59,7 @@
 	import { add, close } from 'ionicons/icons'
 	import L from 'leaflet'
 	import 'leaflet/dist/leaflet.css'
+	import NewPostContent from '@/components/NewPostModal.vue'
 
 	const navTitle = 'Curbside Pickup'
 

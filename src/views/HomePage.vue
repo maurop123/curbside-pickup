@@ -95,6 +95,8 @@
         console.log('permissions: query results', res)
         if (res.state === 'prompt') {
             getGeolocationPermission()
+        } else if (res.state === 'granted') {
+            getGeolocationPermission()
         }
     })
 

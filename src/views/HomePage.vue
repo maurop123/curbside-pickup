@@ -65,10 +65,11 @@
 
     const currentLatLon = ref([39.73915, -104.9847])
     const map = ref(null)
+    const zoomLevel = ref(12)
     let LMap
     onMounted(() => {
         // Set Map
-        LMap = L.map(map.value).setView(currentLatLon.value, 13)
+        LMap = L.map(map.value).setView(currentLatLon.value, zoomLevel.value)
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution:
                 '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -125,7 +126,10 @@
 
     // update map when coordiantes are in
     watch(currentLatLon, async (newCoords, oldCoords) => {
-        LMap.setView(currentLatLon.value, 13)
+        // delay to see animation
+        setTimeout(() => {
+            LMap.setView(currentLatLon.value, zoomLevel.value)
+        }, 500)
     })
 </script>
 

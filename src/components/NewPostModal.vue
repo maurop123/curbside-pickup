@@ -2,13 +2,18 @@
     <ion-content>
         <ion-grid>
             <ion-row>
-                <video ref="camera">
+                <video ref="camera" loop muted autoplay>
                     <source src="" />
                 </video>
             </ion-row>
             <ion-row>
                 <canvas ref="canvas"></canvas>
-                <img ref="stillImg" />
+            </ion-row>
+            <ion-row>
+                <div class="gallery-view">
+                    <img data-index="0" src="" alt="captured image" />
+                    <img ref="stillImg" />
+                </div>
             </ion-row>
             <ion-row class="ion-justify-content-center">
                 <ion-button @click="capture()"> Capture </ion-button>
@@ -30,18 +35,28 @@
     onMounted(() => {
         // Camera
         console.debug('camera', camera)
-        const videoDevice = navigator?.mediaDevices?.getUserMedia({ video: true })
-        if (videoDevice)
-            videoDevice.then(stream => {
-                videoStream = stream
-                camera.value.srcObject = videoStream
-                camera.value.play()
+        const videoDevice = navigator?.mediaDevices?.getUserMedia({
+            video: {
+                width: { ideal: 320 },
+                height: { ideal: 240 },
+            },
+        })
+        if (videoDevice) {
+            videoDevice
+                .then(stream => {
+                    videoStream = stream
+                    camera.value.srcObject = videoStream
+                    camera.value.play()
 
-                // Canvas
-                console.debug('canvas', canvas)
-                canvas.setAttribute('width', stream.videoWidth)
-                canvas.setAttribute('height', stream.videoHeight)
-            })
+                    // Canvas
+                    console.debug('canvas', canvas)
+                    canvas.setAttribute('width', stream.videoWidth)
+                    canvas.setAttribute('height', stream.videoHeight)
+                })
+                .error(err => {
+                    console.error(`${err.name}: ${err.message}`)
+                })
+        }
     })
 
     // Capture
@@ -55,4 +70,10 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped>
+    video {
+        width: 100vw;
+        object-fit: cover;
+        transform: scaleX(-1);
+    }
+</style>

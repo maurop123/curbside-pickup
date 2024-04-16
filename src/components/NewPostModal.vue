@@ -16,8 +16,14 @@
                 <ion-button @click="capture()"> Capture </ion-button>
             </ion-row>
             <ion-row v-else class="ion-justify-content-center">
-                <ion-button color="danger" @click="clearCapture()"> Retry </ion-button>
-                <ion-button color="success" @click="capturedKeep = true">
+                <ion-button
+                    color="danger"
+                    @click="clearCapture()"
+                    :fill="capturedKeep ? 'outline' : 'solid'"
+                >
+                    Retry
+                </ion-button>
+                <ion-button color="success" @click="capturedKeep = !capturedKeep">
                     Keep
                     <ion-icon v-if="capturedKeep" slot="end" :icon="thumbsUp"></ion-icon>
                 </ion-button>
@@ -111,8 +117,11 @@
 
     function clearCapture() {
         if (captured.value) {
-            captured.value = false
-            capturedKeep.value = false
+            if (capturedKeep.value) {
+                capturedKeep.value = false
+            } else {
+                captured.value = false
+            }
         }
     }
 </script>

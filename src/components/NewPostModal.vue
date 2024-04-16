@@ -2,7 +2,7 @@
     <ion-content>
         <ion-grid>
             <ion-row>
-                <video ref="camera" loop muted autoplay @canplay="canplay()">
+                <video v-show="!captured" ref="camera" loop muted autoplay @canplay="canplay()">
                     <source src="" />
                 </video>
             </ion-row>
@@ -27,6 +27,7 @@
     const height = ref(0)
     const camera = ref(null)
     const canvas = ref(null)
+    const captured = ref(false)
     const outputImg = ref(null)
     const streaming = ref(false)
     let videoStream = null
@@ -70,8 +71,8 @@
         if (!streaming.value) {
             console.debug('video', camera.value.videoWidth, camera.value.videoHeight)
 
-            //height.value = (camera.value.videoHeight / camera.value.videoWidth) * width.value
-            height.value = camera.value.videoHeight
+            height.value = (camera.value.videoHeight / camera.value.videoWidth) * width.value
+            //height.value = camera.value.videoHeight
 
             camera.value.setAttribute('width', width.value)
             camera.value.setAttribute('height', height.value)
@@ -93,6 +94,8 @@
             context.drawImage(camera.value, 0, 0, width.value, height.value)
             const data = canvas.value.toDataURL('image/png')
             outputImg.value.setAttribute('src', data)
+
+            captured.value = true
         }
     }
 </script>
@@ -101,9 +104,17 @@
     video {
         width: 100vw;
         object-fit: cover;
-        transform: scaleX(-1);
+        /* transform: scaleX(-1); */
     }
     canvas {
         display: none;
+    }
+
+    .gallery-view {
+        width: 100%;
+
+        img {
+            width: 100%;
+        }
     }
 </style>

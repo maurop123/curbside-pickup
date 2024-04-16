@@ -2,7 +2,7 @@
     <ion-content>
         <ion-grid>
             <ion-row>
-                <video ref="camera" loop muted autoplay>
+                <video ref="camera" loop muted autoplay @canplay="canplay()">
                     <source src="" />
                 </video>
             </ion-row>
@@ -23,11 +23,12 @@
     import { ref, onMounted } from 'vue'
     import { IonButton, IonContent } from '@ionic/vue'
 
-    const width = ref(0)
+    const width = ref(320)
     const height = ref(0)
     const camera = ref(null)
     const canvas = ref(null)
     const outputImg = ref(null)
+    const streaming = ref(false)
     let videoStream = null
 
     // Setup
@@ -70,6 +71,22 @@
         const context = canvas.value.getContext('2d')
         //context.drawImage(camera.value, 0, 0, 200, 150)
         context.drawImage(camera.value, 0, 0, camera.value.clientWidth, camera.value.clientHeight)
+    }
+
+    function canplay() {
+        console.debug('canplay')
+
+        if (!streaming.value) {
+            console.debug('video', camera.value.videoWidth, camera.value.videoHeight)
+
+            height.value = (camera.value.videoHeight / camera.value.videoWidth) * width.value
+            camera.value.setAttribute('width', width.value)
+            camera.value.setAttribute('height', height.value)
+            canvas.value.setAttribute('width', width.value)
+            canvas.value.setAttribute('height', height.value)
+
+            streaming.value = true
+        }
     }
 </script>
 

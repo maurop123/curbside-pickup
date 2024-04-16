@@ -8,11 +8,8 @@
             </ion-row>
             <ion-row>
                 <canvas ref="canvas"></canvas>
-            </ion-row>
-            <ion-row>
                 <div class="gallery-view">
-                    <img data-index="0" src="" alt="captured image" />
-                    <img ref="stillImg" />
+                    <img ref="outputImg" />
                 </div>
             </ion-row>
             <ion-row class="ion-justify-content-center">
@@ -26,12 +23,14 @@
     import { ref, onMounted } from 'vue'
     import { IonButton, IonContent } from '@ionic/vue'
 
-    const camera = ref(null)
-    const canvas = ref(null)
-    const stillImg = ref(null)
-    let videoStream = null
     const width = ref(0)
     const height = ref(0)
+    const camera = ref(null)
+    const canvas = ref(null)
+    const outputImg = ref(null)
+    let videoStream = null
+
+    // Setup
     onMounted(() => {
         // Camera
         console.debug('camera', camera)
@@ -41,25 +40,29 @@
                 height: { ideal: 240 },
             },
         })
+        // Video
         if (videoDevice) {
             videoDevice
                 .then(stream => {
+                    console.debug('stream', stream)
                     videoStream = stream
                     camera.value.srcObject = videoStream
                     camera.value.play()
 
                     // Canvas
                     console.debug('canvas', canvas)
-                    canvas.setAttribute('width', stream.videoWidth)
-                    canvas.setAttribute('height', stream.videoHeight)
+                    canvas.value.setAttribute('width', stream.videoWidth)
+                    canvas.value.setAttribute('height', stream.videoHeight)
                 })
-                .error(err => {
+                .catch(err => {
                     console.error(`${err.name}: ${err.message}`)
                 })
+        } else {
+            console.error('No video device found')
         }
     })
 
-    // Capture
+    // Capture Picture
     function capture() {
         console.debug('capturing', videoStream)
         /*canvas.value.style.height = camera.value.clientHeight*/
@@ -75,5 +78,8 @@
         width: 100vw;
         object-fit: cover;
         transform: scaleX(-1);
+    }
+    canvas {
+        display: none;
     }
 </style>

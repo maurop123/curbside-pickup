@@ -70,7 +70,9 @@
         if (!streaming.value) {
             console.debug('video', camera.value.videoWidth, camera.value.videoHeight)
 
-            height.value = (camera.value.videoHeight / camera.value.videoWidth) * width.value
+            //height.value = (camera.value.videoHeight / camera.value.videoWidth) * width.value
+            height.value = camera.value.videoHeight
+
             camera.value.setAttribute('width', width.value)
             camera.value.setAttribute('height', height.value)
             canvas.value.setAttribute('width', width.value)
@@ -88,9 +90,9 @@
         if (width.value && height.value) {
             canvas.value.width = width.value
             canvas.value.height = height.value
-            /* context.drawImage( camera.value, 0, 0 width.value, height.value) */
-            /*     const data = canvas.value.toDataURL("image/png") */
-            /*     outputImage.value.setAttribute("src", data) */
+            context.drawImage(camera.value, 0, 0, width.value, height.value)
+            const data = canvas.value.toDataURL('image/png')
+            outputImg.value.setAttribute('src', data)
         }
     }
 </script>

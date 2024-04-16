@@ -1,19 +1,26 @@
 <template>
     <ion-content>
         <ion-grid>
-            <ion-row>
-                <video v-show="!captured" ref="camera" loop muted autoplay @canplay="canplay()">
+            <ion-row v-show="!captured">
+                <video ref="camera" loop muted autoplay @canplay="canplay()">
                     <source src="" />
                 </video>
             </ion-row>
-            <ion-row>
+            <ion-row v-show="captured">
                 <canvas ref="canvas"></canvas>
                 <div class="gallery-view">
                     <img ref="outputImg" />
                 </div>
             </ion-row>
-            <ion-row class="ion-justify-content-center">
+            <ion-row v-if="!captured" class="ion-justify-content-center">
                 <ion-button @click="capture()"> Capture </ion-button>
+            </ion-row>
+            <ion-row v-else class="ion-justify-content-center">
+                <ion-button color="danger" @click="clearCapture()"> Retry </ion-button>
+                <ion-button color="success" @click="capturedKeep = true">
+                    Keep
+                    <ion-icon v-if="capturedKeep" slot="end" :icon="thumbsUp"></ion-icon>
+                </ion-button>
             </ion-row>
         </ion-grid>
     </ion-content>
@@ -21,13 +28,15 @@
 
 <script setup lang="ts">
     import { ref, onMounted } from 'vue'
-    import { IonButton, IonContent } from '@ionic/vue'
+    import { IonButton, IonContent, IonIcon } from '@ionic/vue'
+    import { thumbsUpOutline, thumbsUpSharp, thumbsUp } from 'ionicons/icons'
 
     const width = ref(320)
     const height = ref(0)
     const camera = ref(null)
     const canvas = ref(null)
     const captured = ref(false)
+    const capturedKeep = ref(false)
     const outputImg = ref(null)
     const streaming = ref(false)
     let videoStream = null
@@ -92,10 +101,18 @@
             canvas.value.width = width.value
             canvas.value.height = height.value
             context.drawImage(camera.value, 0, 0, width.value, height.value)
+
             const data = canvas.value.toDataURL('image/png')
             outputImg.value.setAttribute('src', data)
 
             captured.value = true
+        }
+    }
+
+    function clearCapture() {
+        if (captured.value) {
+            captured.value = false
+            capturedKeep.value = false
         }
     }
 </script>

@@ -63,16 +63,7 @@
         }
     })
 
-    // Capture Picture
-    function capture() {
-        console.debug('capturing', videoStream)
-        /*canvas.value.style.height = camera.value.clientHeight*/
-        /*canvas.value.style.width = camera.value.clientWidth*/
-        const context = canvas.value.getContext('2d')
-        //context.drawImage(camera.value, 0, 0, 200, 150)
-        context.drawImage(camera.value, 0, 0, camera.value.clientWidth, camera.value.clientHeight)
-    }
-
+    // Setup width and height
     function canplay() {
         console.debug('canplay')
 
@@ -86,6 +77,20 @@
             canvas.value.setAttribute('height', height.value)
 
             streaming.value = true
+        }
+    }
+
+    // Capture picture
+    function capture() {
+        console.debug('capturing', videoStream)
+
+        const context = canvas.value.getContext('2d')
+        if (width.value && height.value) {
+            canvas.value.width = width.value
+            canvas.value.height = height.value
+            /* context.drawImage( camera.value, 0, 0 width.value, height.value) */
+            /*     const data = canvas.value.toDataURL("image/png") */
+            /*     outputImage.value.setAttribute("src", data) */
         }
     }
 </script>

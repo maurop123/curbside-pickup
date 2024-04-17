@@ -77,6 +77,9 @@
     import { thumbsUpOutline, thumbsUpSharp, thumbsUp } from 'ionicons/icons'
     import { initializeApp } from 'firebase/app'
     import { getFirestore, collection, addDoc } from 'firebase/firestore'
+    import { useAppStore } from '@/stores/appStore'
+
+    const appStore = useAppStore()
 
     const width = ref(320)
     const height = ref(0)
@@ -115,6 +118,7 @@
     }
     const app = initializeApp(firebaseConfig)
     const db = getFirestore(app)
+    const postsCollection = 'curbside-posts'
 
     // Setup
     onMounted(() => {
@@ -194,12 +198,18 @@
         }
     }
 
-    function saveNewPost() {
+    async function saveNewPost() {
         try {
-            /* const newDoc = {} */
-            /* console.debug('saveNewPost', newDoc) */
-            /* const docRef = await addDoc(collection(db, 'posts'), {}) */
-        } catch (e) {}
+            const newDoc = {
+                latitude: appStore.coordinates.latitude,
+                longitude: appStore.coordinates.longitude,
+            }
+            console.debug('saveNewPost', newDoc)
+            const docRef = await addDoc(collection(db, postsCollection), newDoc)
+            console.debug('New Post added:', docRef.id)
+        } catch (e) {
+            console.error('Error adding post:', e)
+        }
     }
 </script>
 

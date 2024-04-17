@@ -128,11 +128,6 @@
                     videoStream = stream
                     camera.value.srcObject = videoStream
                     camera.value.play()
-
-                    // Canvas
-                    console.debug('canvas', canvas)
-                    canvas.value.setAttribute('width', stream.videoWidth)
-                    canvas.value.setAttribute('height', stream.videoHeight)
                 })
                 .catch(err => {
                     console.error(`${err.name}: ${err.message}`)

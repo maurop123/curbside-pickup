@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import Leaflet from 'leaflet'
 
 interface AppStore {
     coordinates: {
@@ -17,7 +18,7 @@ export const useAppStore = defineStore('app', {
         },
     }),
     getters: {
-        currentLatLon(state) {
+        currentLatLon(state): Leaflet.LatLngTuple {
             return [state.coordinates.latitude, state.coordinates.longitude]
         },
     },

@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
     import { ref, watch } from 'vue'
+    import type { Ref } from 'vue'
     import { onMounted, onUpdated } from 'vue'
     import { storeToRefs } from 'pinia'
     import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
@@ -70,7 +71,7 @@
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
     import NewPostContent from '@/components/NewPostModal.vue'
-    import { useAppStore } from '@/stores/appStore.ts'
+    import { useAppStore } from '@/stores/appStore'
     import { useFirestore, useCollection } from 'vuefire'
     import { collection } from 'firebase/firestore'
 
@@ -80,9 +81,9 @@
     /* const currentLatLon */
     const { currentLatLon } = storeToRefs(appStore)
     const navTitle = 'Curbside Pickup'
-    const map = ref(null)
+    const map: Ref<HTMLElement | string> = ref('')
     const zoomLevel = ref(12)
-    let LMap
+    let LMap: any
 
     onMounted(() => {
         // Set Map
@@ -118,7 +119,10 @@
     const modal = ref(null)
     function closeModal() {
         console.log('close')
-        modal.value.$el.dismiss(null, 'cancel')
+        if (modal !== null) {
+            // @ts-ignore
+            modal.value.$el.dismiss(null, 'cancel')
+        }
     }
 
     // Geolocation permissions request

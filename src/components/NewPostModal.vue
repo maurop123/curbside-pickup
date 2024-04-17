@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue'
+    import type { Ref } from 'vue'
     import {
         IonButton,
         IonContent,
@@ -81,16 +82,16 @@
 
     const appStore = useAppStore()
 
-    const width = ref(320)
-    const height = ref(0)
-    const camera = ref(null)
-    const canvas = ref(null)
-    const captured = ref(false)
-    const capturedKeep = ref(false)
-    const conditionSlider = ref(50)
-    const outputImg = ref(null)
-    const streaming = ref(false)
-    let videoStream = null
+    const width: Ref<number> = ref(320)
+    const height: Ref<number> = ref(0)
+    const camera: Ref<any> = ref(null)
+    const canvas: Ref<any> = ref(null)
+    const captured: Ref<boolean> = ref(false)
+    const capturedKeep: Ref<boolean> = ref(false)
+    const conditionSlider: Ref<number> = ref(50)
+    const outputImg: Ref<any> = ref(null)
+    const streaming: Ref<boolean> = ref(false)
+    let videoStream: any = null
 
     const conditionText = computed(() => {
         const val = conditionSlider.value

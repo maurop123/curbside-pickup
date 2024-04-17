@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
@@ -29,8 +30,10 @@ import './assets/tailwind.css'
 /* Base styls */
 import './assets/base.css'
 
+const rootStore = createPinia()
 const app = createApp(App).use(IonicVue).use(router)
 
 router.isReady().then(() => {
+  app.use(rootStore)
 	app.mount('#app')
 })

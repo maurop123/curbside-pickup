@@ -29,13 +29,54 @@
                 </ion-button>
             </ion-row>
         </ion-grid>
+        <ion-grid v-if="capturedKeep">
+            <ion-row>
+                <ion-col size="12">
+                    <ion-list>
+                        <ion-item>
+                            <ion-textarea
+                                label="Description"
+                                label-placement="stacked"
+                                placeholder="Enter description of item"
+                            ></ion-textarea>
+                        </ion-item>
+                        <ion-item>
+                            <ion-range
+                                class="px-0"
+                                :label="`Condition: ${conditionText}`"
+                                label-placement="stacked"
+                                aria-label="slider with pin"
+                                v-model="conditionSlider"
+                            ></ion-range>
+                        </ion-item>
+                        <ion-item>
+                            <ion-button @click="saveNewPost">Post</ion-button>
+                        </ion-item>
+                    </ion-list>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
     </ion-content>
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue'
-    import { IonButton, IonContent, IonIcon } from '@ionic/vue'
+    import { ref, onMounted, computed } from 'vue'
+    import {
+        IonButton,
+        IonContent,
+        IonIcon,
+        IonList,
+        IonItem,
+        IonInput,
+        IonRange,
+        IonTextarea,
+        IonGrid,
+        IonRow,
+        IonCol,
+    } from '@ionic/vue'
     import { thumbsUpOutline, thumbsUpSharp, thumbsUp } from 'ionicons/icons'
+    import { initializeApp } from 'firebase/app'
+    import { getFirestore, collection, addDoc } from 'firebase/firestore'
 
     const width = ref(320)
     const height = ref(0)
@@ -43,9 +84,37 @@
     const canvas = ref(null)
     const captured = ref(false)
     const capturedKeep = ref(false)
+    const conditionSlider = ref(50)
     const outputImg = ref(null)
     const streaming = ref(false)
     let videoStream = null
+
+    const conditionText = computed(() => {
+        const val = conditionSlider.value
+        let text = ''
+        if (val < 25) {
+            text = 'Not so good'
+        } else if (val < 50) {
+            text = 'OK'
+        } else if (val < 75) {
+            text = 'Not bad!'
+        } else if (val >= 75) {
+            text = 'Great!'
+        }
+        return text
+    })
+
+    const firebaseConfig = {
+        apiKey: 'AIzaSyBK1UxxKvK8UKbhz6Ez0ZizY0FomHLCuFs',
+        authDomain: 'mauro-made-it.firebaseapp.com',
+        databaseURL: 'https://mauro-made-it.firebaseio.com',
+        projectId: 'mauro-made-it',
+        storageBucket: 'mauro-made-it.appspot.com',
+        messagingSenderId: '175419399994',
+        appId: '1:175419399994:web:53bd17fb1a2540a0bffa03',
+    }
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
 
     // Setup
     onMounted(() => {
@@ -123,6 +192,14 @@
                 captured.value = false
             }
         }
+    }
+
+    function saveNewPost() {
+        try {
+            /* const newDoc = {} */
+            /* console.debug('saveNewPost', newDoc) */
+            /* const docRef = await addDoc(collection(db, 'posts'), {}) */
+        } catch (e) {}
     }
 </script>
 

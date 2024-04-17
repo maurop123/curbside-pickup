@@ -53,6 +53,7 @@
 <script setup lang="ts">
     import { ref, watch } from 'vue'
     import { onMounted, onUpdated } from 'vue'
+    import { storeToRefs } from 'pinia'
     import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
     import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
     import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
@@ -60,13 +61,16 @@
     import L from 'leaflet'
     import 'leaflet/dist/leaflet.css'
     import NewPostContent from '@/components/NewPostModal.vue'
+    import { useAppStore } from '@/stores/appStore.ts'
 
+    const appStore = useAppStore()
+    /* const currentLatLon */
+    const { currentLatLon } = storeToRefs(appStore)
     const navTitle = 'Curbside Pickup'
-
-    const currentLatLon = ref([39.73915, -104.9847])
     const map = ref(null)
     const zoomLevel = ref(12)
     let LMap
+
     onMounted(() => {
         // Set Map
         LMap = L.map(map.value).setView(currentLatLon.value, zoomLevel.value)
@@ -112,8 +116,11 @@
             pos => {
                 const crd = pos.coords
 
+                /* currentLatLon.value = [crd.latitude, crd.longitude] */
+                appStore.coordinates.latitude = crd.latitude
+                appStore.coordinates.longitude = crd.longitude
+
                 console.log('Your current position is:')
-                currentLatLon.value = [crd.latitude, crd.longitude]
                 console.log(`Current Lat, Lon : ${currentLatLon.value}`)
                 console.log(`More or less ${crd.accuracy} meters.`)
             },
@@ -126,9 +133,10 @@
 
     // update map when coordiantes are in
     watch(currentLatLon, async (newCoords, oldCoords) => {
+        console.debug('newCoords', newCoords)
         // delay to see animation
         setTimeout(() => {
-            LMap.setView(currentLatLon.value, zoomLevel.value)
+            LMap.setView(newCoords, zoomLevel.value)
         }, 500)
     })
 </script>

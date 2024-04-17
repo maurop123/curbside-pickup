@@ -17,6 +17,15 @@
                 <div id="map" ref="map" />
             </div>
 
+            <div id="listings">
+                <div v-for="post in posts">
+                    <p>
+                        Latitude {{ post.latitude }}<br />
+                        Longitude {{ post.longitude }}
+                    </p>
+                </div>
+            </div>
+
             <!-- Post Fab -->
             <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="m-0.5">
                 <ion-fab-button id="new-post">
@@ -58,12 +67,16 @@
     import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
     import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
     import { add, close } from 'ionicons/icons'
-    import L from 'leaflet'
+    import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
     import NewPostContent from '@/components/NewPostModal.vue'
     import { useAppStore } from '@/stores/appStore.ts'
+    import { useFirestore, useCollection } from 'vuefire'
+    import { collection } from 'firebase/firestore'
 
     const appStore = useAppStore()
+    const db = useFirestore()
+    const posts = useCollection(collection(db, appStore.collectionName))
     /* const currentLatLon */
     const { currentLatLon } = storeToRefs(appStore)
     const navTitle = 'Curbside Pickup'
@@ -73,8 +86,8 @@
 
     onMounted(() => {
         // Set Map
-        LMap = L.map(map.value).setView(currentLatLon.value, zoomLevel.value)
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        LMap = Leaflet.map(map.value).setView(currentLatLon.value, zoomLevel.value)
+        Leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution:
                 '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }).addTo(LMap)
@@ -83,6 +96,20 @@
         setTimeout(() => {
             LMap.invalidateSize()
         }, 100)
+    })
+
+    // Add pins when posts load
+    watch(posts, newPosts => {
+        posts.value.forEach(post => {
+            console.debug('Adding marker to', post)
+            const lat = post?.latitude
+            const lon = post?.longitude
+            if (lat && lon) {
+                Leaflet.marker([lat, lon]).addTo(LMap)
+            } else {
+                console.error('Could not find latitude or longitude for this post', post)
+            }
+        })
     })
 
     const addIcon = ref(add)
@@ -132,7 +159,7 @@
     }
 
     // update map when coordiantes are in
-    watch(currentLatLon, async (newCoords, oldCoords) => {
+    watch(currentLatLon, (newCoords, oldCoords) => {
         console.debug('newCoords', newCoords)
         // delay to see animation
         setTimeout(() => {

@@ -30,10 +30,26 @@ import './assets/tailwind.css'
 /* Base styls */
 import './assets/base.css'
 
+import { initializeApp } from 'firebase/app'
+import { VueFire } from 'vuefire'
+
+const firebaseConfig = {
+    apiKey: 'AIzaSyBK1UxxKvK8UKbhz6Ez0ZizY0FomHLCuFs',
+    authDomain: 'mauro-made-it.firebaseapp.com',
+    databaseURL: 'https://mauro-made-it.firebaseio.com',
+    projectId: 'mauro-made-it',
+    storageBucket: 'mauro-made-it.appspot.com',
+    messagingSenderId: '175419399994',
+    appId: '1:175419399994:web:53bd17fb1a2540a0bffa03',
+}
+const firebaseApp = initializeApp(firebaseConfig)
+
 const rootStore = createPinia()
-const app = createApp(App).use(IonicVue).use(router)
+const app = createApp(App).use(IonicVue).use(router).use(VueFire, {
+    firebaseApp,
+})
 
 router.isReady().then(() => {
-  app.use(rootStore)
-	app.mount('#app')
+    app.use(rootStore)
+    app.mount('#app')
 })

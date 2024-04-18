@@ -79,22 +79,26 @@
         IonCol,
     } from '@ionic/vue'
     import { thumbsUp, refreshOutline } from 'ionicons/icons'
+    import { getStorage, ref as StorageRef, uploadString } from 'firebase/storage'
     import { collection, addDoc } from 'firebase/firestore'
     import { useFirestore } from 'vuefire'
     import { useAppStore } from '@/stores/appStore'
 
     const activelySaving: Ref<boolean> = ref(false)
-    const appStore = useAppStore()
-    const width: Ref<number> = ref(320)
-    const height: Ref<number> = ref(0)
     const camera: Ref<any> = ref(null)
+    const cameraReady: Ref<boolean> = ref(false)
     const canvas: Ref<any> = ref(null)
     const captured: Ref<boolean> = ref(false)
     const capturedKeep: Ref<boolean> = ref(false)
     const conditionSlider: Ref<number> = ref(50)
+    const imgDataUrl: Ref<string> = ref('')
     const outputImg: Ref<any> = ref(null)
-    const cameraReady: Ref<boolean> = ref(false)
     let videoStream: any = null
+    const width: Ref<number> = ref(320)
+    const height: Ref<number> = ref(0)
+    //Firebase
+    const appStore = useAppStore()
+    const fbStorage = getStorage()
 
     const conditionText = computed(() => {
         const val = conditionSlider.value
@@ -169,8 +173,8 @@
             canvas.value.height = height.value
             context.drawImage(camera.value, 0, 0, width.value, height.value)
 
-            const data = canvas.value.toDataURL('image/png')
-            outputImg.value.setAttribute('src', data)
+            imgDataUrl.value = canvas.value.toDataURL('image/png')
+            outputImg.value.setAttribute('src', imgDataUrl.value)
 
             captured.value = true
         }
@@ -188,15 +192,20 @@
 
     async function saveNewPost() {
         activelySaving.value = true
+
+        const newDoc = {
+            latitude: appStore.coordinates.latitude,
+            longitude: appStore.coordinates.longitude,
+        }
+        console.debug('saveNewPost', newDoc)
+
         try {
-            const newDoc = {
-                latitude: appStore.coordinates.latitude,
-                longitude: appStore.coordinates.longitude,
-            }
-            console.debug('saveNewPost', newDoc)
             const docRef = await addDoc(collection(db, appStore.collectionName), newDoc)
-            console.debug('New Post added:', docRef.id)
-            window.location.reload()
+            const storageRef = StorageRef(fbStorage, `curbside-post_${docRef.id}`)
+            uploadString(storageRef, imgDataUrl.value, 'data_url').then(snapshot => {
+                console.debug('New Post added:', docRef.id, snapshot)
+                window.location.reload()
+            })
         } catch (e) {
             console.error('Error adding post:', e)
             activelySaving.value = false

@@ -40,7 +40,7 @@
                         <ion-grid class="p-0">
                             <ion-row>
                                 <ion-col size="10" class="p-0">
-                                    <ion-title> New Posting </ion-title>
+                                    <ion-title> New Post </ion-title>
                                 </ion-col>
                                 <ion-col size="2" class="text-right pt-2 pr-2">
                                     <ion-icon

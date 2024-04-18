@@ -1,6 +1,16 @@
 <template>
     <ion-content>
-        <ion-grid>
+        <!-- Loader -->
+        <ion-grid v-if="!cameraReady" class="loadingContainer">
+            <ion-row class="ion-justify-content-center">
+                <ion-icon class="loading" :icon="refreshOutline"></ion-icon>
+            </ion-row>
+            <ion-row class="ion-justify-content-center">
+                <p class="loadingText">Requesting camera permissions</p>
+            </ion-row>
+        </ion-grid>
+        <ion-grid v-show="cameraReady">
+            <!-- Video/Camera -->
             <ion-row v-show="!captured">
                 <video ref="camera" loop muted autoplay @canplay="canplay()">
                     <source src="" />
@@ -12,6 +22,8 @@
                     <img ref="outputImg" />
                 </div>
             </ion-row>
+
+            <!-- Capture Buttons -->
             <ion-row v-if="!captured" class="ion-justify-content-center">
                 <ion-button @click="capture()"> Capture </ion-button>
             </ion-row>
@@ -29,6 +41,8 @@
                 </ion-button>
             </ion-row>
         </ion-grid>
+
+        <!-- Rest of the form -->
         <ion-grid v-if="capturedKeep">
             <ion-row>
                 <ion-col size="12">
@@ -75,7 +89,7 @@
         IonRow,
         IonCol,
     } from '@ionic/vue'
-    import { thumbsUpOutline, thumbsUpSharp, thumbsUp } from 'ionicons/icons'
+    import { thumbsUp, refreshOutline } from 'ionicons/icons'
     import { collection, addDoc } from 'firebase/firestore'
     import { useFirestore } from 'vuefire'
     import { useAppStore } from '@/stores/appStore'
@@ -90,7 +104,7 @@
     const capturedKeep: Ref<boolean> = ref(false)
     const conditionSlider: Ref<number> = ref(50)
     const outputImg: Ref<any> = ref(null)
-    const streaming: Ref<boolean> = ref(false)
+    const cameraReady: Ref<boolean> = ref(false)
     let videoStream: any = null
 
     const conditionText = computed(() => {
@@ -141,7 +155,7 @@
     function canplay() {
         console.debug('canplay')
 
-        if (!streaming.value) {
+        if (!cameraReady.value) {
             console.debug('video', camera.value.videoWidth, camera.value.videoHeight)
 
             height.value = (camera.value.videoHeight / camera.value.videoWidth) * width.value
@@ -152,7 +166,7 @@
             canvas.value.setAttribute('width', width.value)
             canvas.value.setAttribute('height', height.value)
 
-            streaming.value = true
+            cameraReady.value = true
         }
     }
 
@@ -214,5 +228,31 @@
         img {
             width: 100%;
         }
+    }
+
+    ion-icon.loading {
+        font-size: 4rem;
+        margin-bottom: 2rem;
+        animation: loading 1.5s linear infinite;
+    }
+
+    @keyframes loading {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .loadingText {
+        font-size: 1.5rem;
+    }
+
+    .loadingContainer {
+        min-height: 300px;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
     }
 </style>

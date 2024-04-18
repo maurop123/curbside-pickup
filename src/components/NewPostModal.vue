@@ -9,7 +9,7 @@
                 <p class="loadingText">Requesting camera permissions</p>
             </ion-row>
         </ion-grid>
-        <ion-grid v-show="cameraReady">
+        <ion-grid v-show="cameraReady" class="cameraGrid">
             <!-- Video/Camera -->
             <ion-row v-show="!captured">
                 <video ref="camera" loop muted autoplay @canplay="canplay()">
@@ -43,31 +43,20 @@
         </ion-grid>
 
         <!-- Rest of the form -->
-        <ion-grid v-if="capturedKeep">
+        <ion-grid v-if="capturedKeep" class="form">
+            <ion-row class="inputRow">
+                <p>Description</p>
+                <ion-textarea placeholder="Enter description of item"></ion-textarea>
+            </ion-row>
+            <ion-row class="inputRow">
+                <p>Condition: {{ conditionText }}</p>
+                <ion-range aria-label="slider with pin" v-model="conditionSlider"></ion-range>
+            </ion-row>
             <ion-row>
-                <ion-col size="12">
-                    <ion-list>
-                        <ion-item>
-                            <ion-textarea
-                                label="Description"
-                                label-placement="stacked"
-                                placeholder="Enter description of item"
-                            ></ion-textarea>
-                        </ion-item>
-                        <ion-item>
-                            <ion-range
-                                class="px-0"
-                                :label="`Condition: ${conditionText}`"
-                                label-placement="stacked"
-                                aria-label="slider with pin"
-                                v-model="conditionSlider"
-                            ></ion-range>
-                        </ion-item>
-                        <ion-item>
-                            <ion-button @click="saveNewPost">Post</ion-button>
-                        </ion-item>
-                    </ion-list>
-                </ion-col>
+                <ion-button @click="saveNewPost" class="postButton">
+                    <span v-if="!activelySaving">Post</span>
+                    <ion-icon v-else :icon="refreshOutline" class="loading"></ion-icon>
+                </ion-button>
             </ion-row>
         </ion-grid>
     </ion-content>
@@ -94,8 +83,8 @@
     import { useFirestore } from 'vuefire'
     import { useAppStore } from '@/stores/appStore'
 
+    const activelySaving: Ref<boolean> = ref(false)
     const appStore = useAppStore()
-
     const width: Ref<number> = ref(320)
     const height: Ref<number> = ref(0)
     const camera: Ref<any> = ref(null)
@@ -198,6 +187,7 @@
     }
 
     async function saveNewPost() {
+        activelySaving.value = true
         try {
             const newDoc = {
                 latitude: appStore.coordinates.latitude,
@@ -206,8 +196,10 @@
             console.debug('saveNewPost', newDoc)
             const docRef = await addDoc(collection(db, appStore.collectionName), newDoc)
             console.debug('New Post added:', docRef.id)
+            window.location.reload()
         } catch (e) {
             console.error('Error adding post:', e)
+            activelySaving.value = false
         }
     }
 </script>
@@ -230,9 +222,16 @@
         }
     }
 
-    ion-icon.loading {
+    .postButton {
+        width: 73px;
+    }
+
+    .loadingContainer ion-icon {
         font-size: 4rem;
         margin-bottom: 2rem;
+    }
+
+    ion-icon.loading {
         animation: loading 1.5s linear infinite;
     }
 
@@ -254,5 +253,22 @@
         display: flex;
         flex-flow: column;
         justify-content: center;
+    }
+
+    .form {
+        ion-row {
+            margin-bottom: 1rem;
+        }
+    }
+
+    .cameraGrid {
+        margin-bottom: 1rem;
+    }
+
+    .inputRow {
+        display: flex;
+        flex-flow: column;
+        margin-bottom: 2rem;
+        font-weight: 600;
     }
 </style>

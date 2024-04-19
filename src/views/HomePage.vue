@@ -18,12 +18,15 @@
             </div>
 
             <div id="listings">
-                <div v-for="post in posts">
-                    <Listing
-                        :post="post"
-                        :distance="getDistance(post)"
-                        @click="listingClicked(post)"
-                    />
+                <div
+                    v-for="(post, i) in posts"
+                    :ref="
+                        el => {
+                            listingRefs[post.id] = el
+                        }
+                    "
+                >
+                    <Listing :post="post" :distance="getDistance(post)" />
                 </div>
             </div>
 
@@ -62,7 +65,7 @@
 
 <script setup lang="ts">
     //vue
-    import { ref, watch } from 'vue'
+    import { ref, reactive, watch } from 'vue'
     import type { Ref } from 'vue'
     import { onMounted, onUpdated } from 'vue'
     import { storeToRefs } from 'pinia'
@@ -94,7 +97,9 @@
     const zoomLevel = ref(12)
     let LMap: any
     //app
-    const navTitle = 'Curbside Pickup'
+    const navTitle: string = 'Curbside Pickup'
+    // @ts-ignore
+    const listingRefs: Reactive<{}> = reactive({})
 
     onMounted(() => {
         // Set Map
@@ -111,7 +116,12 @@
     })
 
     function markerClick(post: any) {
-        console.debug('markerClick', post)
+        console.debug('markerClick', post, listingRefs)
+        listingRefs[post.id].scrollIntoView()
+        listingRefs[post.id].setAttribute('class', 'selected')
+        setTimeout(() => {
+            listingRefs[post.id].setAttribute('class', '')
+        }, 3000)
     }
 
     // Add pins when posts load
@@ -122,7 +132,6 @@
             const lon = post?.longitude
             if (lat && lon) {
                 Leaflet.marker([lat, lon], {
-                    clickable: true,
                     icon: Leaflet.icon({
                         iconUrl: markerIconPng,
                         shadowUrl: markerShadowPng,
@@ -225,5 +234,18 @@
     #map {
         width: 100%;
         height: 400px;
+    }
+
+    @keyframes animated-border {
+        from {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+        }
+        to {
+            box-shadow: 0 0 0 20px rgba(59, 130, 246, 0);
+        }
+    }
+
+    .selected {
+        animation: animated-border 1.5s infinite;
     }
 </style>

@@ -5,7 +5,6 @@
                 <ion-title>{{ navTitle }}</ion-title>
             </ion-toolbar>
         </ion-header>
-
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
                 <ion-toolbar class="cu-toolbar">
@@ -13,6 +12,7 @@
                 </ion-toolbar>
             </ion-header>
 
+            <!-- Map -->
             <div id="container">
                 <div id="map" ref="map" />
             </div>
@@ -75,6 +75,7 @@
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
     import markerIconPng from 'leaflet/dist/images/marker-icon.png'
+    import markerShadowPng from 'leaflet/dist/images/marker-shadow.png'
     //app
     import Listing from '@/components/ListingComponent.vue'
     import NewPostContent from '@/components/NewPostModal.vue'
@@ -112,8 +113,9 @@
             const lat = post?.latitude
             const lon = post?.longitude
             if (lat && lon) {
-                // @ts-ignore
-                Leaflet.marker([lat, lon], { iconUrl: markerIconPng }).addTo(LMap)
+                Leaflet.marker([lat, lon], {
+                    icon: Leaflet.icon({ iconUrl: markerIconPng, shadowUrl: markerShadowPng }),
+                }).addTo(LMap)
             } else {
                 console.error('Could not find latitude or longitude for this post', post)
             }

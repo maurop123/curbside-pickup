@@ -43,7 +43,7 @@
         </ion-grid>
 
         <!-- Rest of the form -->
-        <ion-grid v-if="capturedKeep" class="form">
+        <ion-grid v-if="capturedKeep" class="form p-2.5">
             <ion-row class="inputRow">
                 <p>Description</p>
                 <ion-textarea

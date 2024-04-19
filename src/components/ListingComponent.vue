@@ -6,6 +6,11 @@
             </ion-col>
             <ion-col size="8" class="flex flex-col justify-between">
                 <!-- distance away -->
+                <p class="text-sm font-semibold">
+                    {{ props.distance }} km away (<span class="text-xs text-gray-500"
+                        >Condition: <span class="text-blue-500">{{ conditionText }}</span></span
+                    >)
+                </p>
 
                 <p>
                     {{ props.post.description }}
@@ -13,7 +18,7 @@
                 <!-- condition -->
 
                 <!-- time since posted -->
-                <p class="text-sm text-gray-500">Posted {{ postDate }}</p>
+                <p class="text-xs text-gray-500">Posted {{ postDate }}</p>
             </ion-col>
         </ion-row>
     </ion-grid>
@@ -26,7 +31,7 @@
     import { formatDistance } from 'date-fns'
 
     //app
-    const props = defineProps(['post'])
+    const props = defineProps(['post', 'distance'])
     console.debug('Listing props', props.post)
     const listingImage: Ref<HTMLElement | null> = ref(null)
     //firebase
@@ -40,6 +45,22 @@
     const postDate = computed(() => {
         console.debug('postDate', props.post.createdAt)
         return formatDistance(new Date(props.post.createdAt), new Date(), { addSuffix: true })
+    })
+
+    // Copy and pasted from NewPostModal
+    const conditionText = computed(() => {
+        const val = props.post.condition
+        let text = ''
+        if (val < 25) {
+            text = 'Not so good'
+        } else if (val < 50) {
+            text = 'OK'
+        } else if (val < 75) {
+            text = 'Not bad!'
+        } else if (val >= 75) {
+            text = 'Great!'
+        }
+        return text
     })
 </script>
 

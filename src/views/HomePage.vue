@@ -19,7 +19,7 @@
 
             <div id="listings">
                 <div v-for="post in posts">
-                    <Listing :post="post" />
+                    <Listing :post="post" :distance="getDistance(post)" />
                 </div>
             </div>
 
@@ -165,6 +165,12 @@
             },
             options,
         )
+    }
+
+    function getDistance(post) {
+        const distance = LMap.distance(currentLatLon.value, [post.latitude, post.longitude])
+        console.debug('distance', distance)
+        return Math.round((distance / 1000) * 10) / 10
     }
 
     // update map when coordiantes are in

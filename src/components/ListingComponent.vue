@@ -7,7 +7,7 @@
             <ion-col size="8" class="flex flex-col justify-between">
                 <!-- distance away -->
                 <p class="text-sm font-semibold">
-                    {{ props.distance }} km away (<span class="text-xs text-gray-500"
+                    {{ props.distance }} mi away (<span class="text-xs text-gray-500"
                         >Condition: <span class="text-blue-500">{{ conditionText }}</span></span
                     >)
                 </p>
@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
     import { ref, computed } from 'vue'
+    import type { Ref } from 'vue'
     import { collection } from 'firebase/firestore'
     import { getStorage, ref as fbRef, getDownloadURL } from 'firebase/storage'
     import { formatDistance } from 'date-fns'
@@ -33,7 +34,7 @@
     //app
     const props = defineProps(['post', 'distance'])
     console.debug('Listing props', props.post)
-    const listingImage: Ref<HTMLElement | null> = ref(null)
+    const listingImage = ref()
     //firebase
     const storage = getStorage()
     const pathRef = fbRef(storage, `curbside-post_${props.post.id}`)

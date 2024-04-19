@@ -74,6 +74,7 @@
     //leaflet
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
+    import markerIconPng from 'leaflet/dist/images/marker-icon.png'
     //app
     import Listing from '@/components/ListingComponent.vue'
     import NewPostContent from '@/components/NewPostModal.vue'
@@ -111,7 +112,8 @@
             const lat = post?.latitude
             const lon = post?.longitude
             if (lat && lon) {
-                Leaflet.marker([lat, lon]).addTo(LMap)
+                // @ts-ignore
+                Leaflet.marker([lat, lon], { iconUrl: markerIconPng }).addTo(LMap)
             } else {
                 console.error('Could not find latitude or longitude for this post', post)
             }
@@ -167,10 +169,10 @@
         )
     }
 
-    function getDistance(post) {
+    function getDistance(post: any) {
         const distance = LMap.distance(currentLatLon.value, [post.latitude, post.longitude])
         console.debug('distance', distance)
-        return Math.round((distance / 1000) * 10) / 10
+        return Math.round((distance / 1000) * 0.6213712 * 10) / 10 // km to mi rounded to 1 decimal
     }
 
     // update map when coordiantes are in

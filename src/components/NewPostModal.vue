@@ -51,7 +51,7 @@
                     placeholder="Enter description of item"
                 ></ion-textarea>
             </ion-row>
-            <ion-row v-model="condition" class="inputRow">
+            <ion-row class="inputRow">
                 <p>Condition: {{ conditionText }}</p>
                 <ion-range aria-label="slider with pin" v-model="conditionSlider"></ion-range>
             </ion-row>
@@ -103,7 +103,7 @@
     const description: Ref<string> = ref('')
     const imgDataUrl: Ref<string> = ref('')
     const outputImg: Ref<any> = ref(null)
-    const submitError: Ref<string> = ref('')
+    const submitError = ref()
     const width: Ref<number> = ref(320)
     const height: Ref<number> = ref(0)
     let videoStream: any = null
@@ -203,7 +203,7 @@
 
     async function saveNewPost() {
         activelySaving.value = true
-        submitError.value = ''
+        submitError.value = null
 
         try {
             if (!description.value) {

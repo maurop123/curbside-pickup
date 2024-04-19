@@ -19,7 +19,11 @@
 
             <div id="listings">
                 <div v-for="post in posts">
-                    <Listing :post="post" :distance="getDistance(post)" />
+                    <Listing
+                        :post="post"
+                        :distance="getDistance(post)"
+                        @click="listingClicked(post)"
+                    />
                 </div>
             </div>
 
@@ -106,6 +110,10 @@
         }, 100)
     })
 
+    function markerClick(post: any) {
+        console.debug('markerClick', post)
+    }
+
     // Add pins when posts load
     watch(posts, newPosts => {
         posts.value.forEach(post => {
@@ -114,8 +122,16 @@
             const lon = post?.longitude
             if (lat && lon) {
                 Leaflet.marker([lat, lon], {
-                    icon: Leaflet.icon({ iconUrl: markerIconPng, shadowUrl: markerShadowPng }),
-                }).addTo(LMap)
+                    clickable: true,
+                    icon: Leaflet.icon({
+                        iconUrl: markerIconPng,
+                        shadowUrl: markerShadowPng,
+                    }),
+                })
+                    .on('click', () => {
+                        markerClick(post)
+                    })
+                    .addTo(LMap)
             } else {
                 console.error('Could not find latitude or longitude for this post', post)
             }
@@ -175,6 +191,10 @@
         const distance = LMap.distance(currentLatLon.value, [post.latitude, post.longitude])
         console.debug('distance', distance)
         return Math.round((distance / 1000) * 0.6213712 * 10) / 10 // km to mi rounded to 1 decimal
+    }
+
+    function listingSelected(post: any) {
+        console.debug('listingSelected', post)
     }
 
     // update map when coordiantes are in

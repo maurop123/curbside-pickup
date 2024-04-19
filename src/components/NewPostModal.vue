@@ -62,7 +62,7 @@
                 </ion-button>
                 <div class="submitText">
                     <p v-if="submitError" class="submitError">
-                        <span>{{ submitError }}</span>
+                        {{ submitError }}
                     </p>
                     <p v-else-if="activelySaving">Please wait...</p>
                 </div>
@@ -211,6 +211,7 @@
             }
 
             const newDoc = {
+                createdAt: Date.now(),
                 condition: conditionSlider.value,
                 description: description.value,
                 latitude: appStore.coordinates.latitude,

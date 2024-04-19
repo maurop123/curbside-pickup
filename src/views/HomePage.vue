@@ -19,10 +19,7 @@
 
             <div id="listings">
                 <div v-for="post in posts">
-                    <p>
-                        Latitude {{ post.latitude }}<br />
-                        Longitude {{ post.longitude }}
-                    </p>
+                    <Listing :post="post" />
                 </div>
             </div>
 
@@ -60,30 +57,38 @@
 </template>
 
 <script setup lang="ts">
+    //vue
     import { ref, watch } from 'vue'
     import type { Ref } from 'vue'
     import { onMounted, onUpdated } from 'vue'
     import { storeToRefs } from 'pinia'
+    //ionic
     import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
     import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
     import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
     import { add, close } from 'ionicons/icons'
-    import Leaflet from 'leaflet'
-    import 'leaflet/dist/leaflet.css'
-    import NewPostContent from '@/components/NewPostModal.vue'
+    //firestore
     import { useAppStore } from '@/stores/appStore'
     import { useFirestore, useCollection } from 'vuefire'
     import { collection } from 'firebase/firestore'
+    //leaflet
+    import Leaflet from 'leaflet'
+    import 'leaflet/dist/leaflet.css'
+    //app
+    import Listing from '@/components/ListingComponent.vue'
+    import NewPostContent from '@/components/NewPostModal.vue'
 
+    //firestore
     const appStore = useAppStore()
     const db = useFirestore()
     const posts = useCollection(collection(db, appStore.collectionName))
-    /* const currentLatLon */
     const { currentLatLon } = storeToRefs(appStore)
-    const navTitle = 'Curbside Pickup'
+    //leaflet
     const map: Ref<HTMLElement | string> = ref('')
     const zoomLevel = ref(12)
     let LMap: any
+    //app
+    const navTitle = 'Curbside Pickup'
 
     onMounted(() => {
         // Set Map

@@ -19,7 +19,7 @@
 
             <div id="listings">
                 <div
-                    v-for="(post, i) in posts"
+                    v-for="(post, i) in postsOrdered"
                     :ref="
                         el => {
                             listingRefs[post.id] = el
@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
     //vue
-    import { ref, reactive, watch } from 'vue'
+    import { ref, reactive, computed, watch } from 'vue'
     import type { Ref } from 'vue'
     import { onMounted, onUpdated } from 'vue'
     import { storeToRefs } from 'pinia'
@@ -90,6 +90,8 @@
     //app
     import Listing from '@/components/ListingComponent.vue'
     import NewPostContent from '@/components/NewPostModal.vue'
+    //misc
+    import _orderBy from 'lodash/orderBy'
 
     //firestore
     const appStore = useAppStore()
@@ -104,6 +106,15 @@
     const navTitle: string = 'Curbside Pickup'
     // @ts-ignore
     const listingRefs: Reactive<{}> = reactive({})
+
+    const postsOrdered = computed(() => {
+        const orderingPosts = posts.value.map(p => {
+            p.distance = getDistance(p)
+            console.debug('p.distance', p.distance)
+            return p
+        })
+        return _orderBy(posts.value, ['createdAt', 'distance'], ['desc', 'asc'])
+    })
 
     onMounted(() => {
         // Set Map

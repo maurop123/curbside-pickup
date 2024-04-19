@@ -5,17 +5,17 @@
                 <img ref="listingImage" />
             </ion-col>
             <ion-col size="8" class="flex flex-col justify-between">
-                <!-- distance away -->
+                <!-- distance and condition -->
                 <p class="text-sm font-semibold">
                     {{ props.distance }} mi away (<span class="text-xs text-gray-500"
                         >Condition: <span class="text-blue-500">{{ conditionText }}</span></span
                     >)
                 </p>
 
+                <!-- description -->
                 <p>
                     {{ props.post.description }}
                 </p>
-                <!-- condition -->
 
                 <!-- time since posted -->
                 <p class="text-xs text-gray-500">Posted {{ postDate }}</p>

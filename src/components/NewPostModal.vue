@@ -136,6 +136,7 @@
             video: {
                 width: { ideal: 320 },
                 height: { ideal: 240 },
+                facingMode: 'environment',
             },
         })
         // Video

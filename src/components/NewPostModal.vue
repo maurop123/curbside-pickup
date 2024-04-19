@@ -46,9 +46,12 @@
         <ion-grid v-if="capturedKeep" class="form">
             <ion-row class="inputRow">
                 <p>Description</p>
-                <ion-textarea placeholder="Enter description of item"></ion-textarea>
+                <ion-textarea
+                    v-model="description"
+                    placeholder="Enter description of item"
+                ></ion-textarea>
             </ion-row>
-            <ion-row class="inputRow">
+            <ion-row v-model="condition" class="inputRow">
                 <p>Condition: {{ conditionText }}</p>
                 <ion-range aria-label="slider with pin" v-model="conditionSlider"></ion-range>
             </ion-row>
@@ -57,6 +60,12 @@
                     <span v-if="!activelySaving">Post</span>
                     <ion-icon v-else :icon="refreshOutline" class="loading"></ion-icon>
                 </ion-button>
+                <div class="submitText">
+                    <p v-if="submitError" class="submitError">
+                        <span>{{ submitError }}</span>
+                    </p>
+                    <p v-else-if="activelySaving">Please wait...</p>
+                </div>
             </ion-row>
         </ion-grid>
     </ion-content>
@@ -91,11 +100,13 @@
     const captured: Ref<boolean> = ref(false)
     const capturedKeep: Ref<boolean> = ref(false)
     const conditionSlider: Ref<number> = ref(50)
+    const description: Ref<string> = ref('')
     const imgDataUrl: Ref<string> = ref('')
     const outputImg: Ref<any> = ref(null)
-    let videoStream: any = null
+    const submitError: Ref<string> = ref('')
     const width: Ref<number> = ref(320)
     const height: Ref<number> = ref(0)
+    let videoStream: any = null
     //Firebase
     const appStore = useAppStore()
     const fbStorage = getStorage()
@@ -192,22 +203,36 @@
 
     async function saveNewPost() {
         activelySaving.value = true
-
-        const newDoc = {
-            latitude: appStore.coordinates.latitude,
-            longitude: appStore.coordinates.longitude,
-        }
-        console.debug('saveNewPost', newDoc)
+        submitError.value = ''
 
         try {
+            if (!description.value) {
+                throw 'Description is empty. Please fill in'
+            }
+
+            const newDoc = {
+                condition: conditionSlider.value,
+                description: description.value,
+                latitude: appStore.coordinates.latitude,
+                longitude: appStore.coordinates.longitude,
+            }
+            console.debug('saveNewPost', newDoc)
+
             const docRef = await addDoc(collection(db, appStore.collectionName), newDoc)
             const storageRef = StorageRef(fbStorage, `curbside-post_${docRef.id}`)
-            uploadString(storageRef, imgDataUrl.value, 'data_url').then(snapshot => {
-                console.debug('New Post added:', docRef.id, snapshot)
-                window.location.reload()
-            })
+            uploadString(storageRef, imgDataUrl.value, 'data_url')
+                .then(snapshot => {
+                    console.debug('New Post added:', docRef.id, snapshot)
+                    window.location.reload()
+                })
+                .catch(e => {
+                    console.error('Error adding post:', e)
+                    submitError.value = e
+                    activelySaving.value = false
+                })
         } catch (e) {
             console.error('Error adding post:', e)
+            submitError.value = e
             activelySaving.value = false
         }
     }
@@ -279,5 +304,15 @@
         flex-flow: column;
         margin-bottom: 2rem;
         font-weight: 600;
+    }
+
+    .submitText {
+        padding-left: 10px;
+        display: flex;
+        align-items: center;
+
+        .submitError {
+            color: red;
+        }
     }
 </style>

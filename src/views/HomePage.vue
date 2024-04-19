@@ -26,7 +26,11 @@
                         }
                     "
                 >
-                    <Listing :post="post" :distance="getDistance(post)" />
+                    <Listing
+                        :post="post"
+                        :distance="getDistance(post)"
+                        @click="listingClicked(post)"
+                    />
                 </div>
             </div>
 
@@ -93,7 +97,7 @@
     const posts = useCollection(collection(db, appStore.collectionName))
     const { currentLatLon } = storeToRefs(appStore)
     //leaflet
-    const map: Ref<HTMLElement | string> = ref('')
+    const map: Ref<any> = ref()
     const zoomLevel = ref(12)
     let LMap: any
     //app
@@ -202,8 +206,10 @@
         return Math.round((distance / 1000) * 0.6213712 * 10) / 10 // km to mi rounded to 1 decimal
     }
 
-    function listingSelected(post: any) {
-        console.debug('listingSelected', post)
+    function listingClicked(post: any) {
+        console.debug('listingClicked', post)
+        map.value.scrollIntoView()
+        LMap.setView([post.latitude, post.longitude])
     }
 
     // update map when coordiantes are in

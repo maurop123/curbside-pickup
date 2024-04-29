@@ -5,12 +5,8 @@
                 <img ref="listingImage" />
             </ion-col>
             <ion-col size="8" class="flex flex-col justify-between">
-                <!-- distance and condition -->
-                <p class="text-sm font-semibold">
-                    {{ props.distance }} mi away (<span class="text-xs text-gray-500"
-                        >Condition: <span class="text-blue-500">{{ conditionText }}</span></span
-                    >)
-                </p>
+                <!-- distance -->
+                <p class="text-sm font-semibold">{{ props.distance }} mi away</p>
 
                 <!-- description -->
                 <p>
@@ -46,22 +42,6 @@
     const postDate = computed(() => {
         console.debug('postDate', props.post.createdAt)
         return formatDistance(new Date(props.post.createdAt), new Date(), { addSuffix: true })
-    })
-
-    // Copy and pasted from NewPostModal
-    const conditionText = computed(() => {
-        const val = props.post.condition
-        let text = ''
-        if (val < 25) {
-            text = 'Not so good'
-        } else if (val < 50) {
-            text = 'OK'
-        } else if (val < 75) {
-            text = 'Not bad!'
-        } else if (val >= 75) {
-            text = 'Great!'
-        }
-        return text
     })
 </script>
 

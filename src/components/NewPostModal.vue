@@ -48,12 +48,8 @@
                 <p>Description</p>
                 <ion-textarea
                     v-model="description"
-                    placeholder="Enter description of item"
+                    placeholder="Describe the item, its condition, location, etc..."
                 ></ion-textarea>
-            </ion-row>
-            <ion-row class="inputRow">
-                <p>Condition: {{ conditionText }}</p>
-                <ion-range aria-label="slider with pin" v-model="conditionSlider"></ion-range>
             </ion-row>
             <ion-row>
                 <ion-button @click="saveNewPost" class="postButton">
@@ -99,7 +95,6 @@
     const canvas: Ref<any> = ref(null)
     const captured: Ref<boolean> = ref(false)
     const capturedKeep: Ref<boolean> = ref(false)
-    const conditionSlider: Ref<number> = ref(50)
     const description: Ref<string> = ref('')
     const imgDataUrl: Ref<string> = ref('')
     const outputImg: Ref<any> = ref(null)
@@ -110,22 +105,6 @@
     //Firebase
     const appStore = useAppStore()
     const fbStorage = getStorage()
-
-    const conditionText = computed(() => {
-        const val = conditionSlider.value
-        let text = ''
-        if (val < 25) {
-            text = 'Not so good'
-        } else if (val < 50) {
-            text = 'OK'
-        } else if (val < 75) {
-            text = 'Not bad!'
-        } else if (val >= 75) {
-            text = 'Great!'
-        }
-        return text
-    })
-
     const db = useFirestore()
 
     // Setup
@@ -213,10 +192,10 @@
 
             const newDoc = {
                 createdAt: Date.now(),
-                condition: conditionSlider.value,
                 description: description.value,
                 latitude: appStore.coordinates.latitude,
                 longitude: appStore.coordinates.longitude,
+                version: 2,
             }
             console.debug('saveNewPost', newDoc)
 

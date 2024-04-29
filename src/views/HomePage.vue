@@ -220,7 +220,7 @@
     function listingClicked(post: any) {
         console.debug('listingClicked', post)
         map.value.scrollIntoView()
-        LMap.setView([post.latitude, post.longitude])
+        LMap.setView([post.latitude, post.longitude], 19)
     }
 
     // update map when coordiantes are in
@@ -253,16 +253,16 @@
         height: 400px;
     }
 
-    @keyframes animated-border {
+    @keyframes flash-listing {
         from {
-            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            background-color: rgba(59, 130, 246, 0.4);
         }
         to {
-            box-shadow: 0 0 0 20px rgba(59, 130, 246, 0);
+            background-color: rgba(59, 130, 246, 0);
         }
     }
 
     .selected {
-        animation: animated-border 1.5s infinite;
+        animation: flash-listing 1.5s infinite;
     }
 </style>

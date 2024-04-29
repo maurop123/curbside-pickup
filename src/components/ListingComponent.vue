@@ -1,7 +1,7 @@
 <template>
-    <ion-grid>
+    <ion-grid class="pt-0 pl-0">
         <ion-row>
-            <ion-col size="4">
+            <ion-col size="4" class="pt-0 pl-0">
                 <img ref="listingImage" />
             </ion-col>
             <ion-col size="8" class="flex flex-col justify-between">

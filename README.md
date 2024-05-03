@@ -1,6 +1,4 @@
-# Curbside Pickup
-
-An app for finding free stuff people put out on the curb.
+# An app for finding free stuff
 
 ![App Screenshot](public/app_screenshot.png)
 

@@ -1,5 +1,7 @@
 # Curbside Pickup
 
+![App Screenshot](public/app_screenshot.png)
+
 An app for finding free stuff people put out on the curb.
 
 ## Alpha v1

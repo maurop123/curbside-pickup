@@ -89,16 +89,10 @@
     import { useAppStore } from '@/stores/appStore'
     //misc
     import _orderBy from 'lodash/orderBy'
-    import { db } from '@/firebaseApp.ts'
-    //firestore
-    import { collection } from 'firebase/firestore'
-    import { useFirestore, useCollection } from 'vuefire'
 
-    //firestore
-    const posts = useCollection(collection(db, 'curbside-posts'))
     //app store
     const appStore = useAppStore()
-    const { currentLatLon } = storeToRefs(appStore)
+    const { currentLatLon, posts } = storeToRefs(appStore)
     //leaflet
     const map: Ref<any> = ref()
     const zoomLevel = ref(12)

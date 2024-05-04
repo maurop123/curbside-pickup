@@ -78,10 +78,6 @@
     import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
     import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
     import { add, close } from 'ionicons/icons'
-    //firestore
-    import { useAppStore } from '@/stores/appStore'
-    import { useFirestore, useCollection } from 'vuefire'
-    import { collection } from 'firebase/firestore'
     //leaflet
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
@@ -90,23 +86,27 @@
     //app
     import Listing from '@/components/ListingComponent.vue'
     import NewPostContent from '@/components/NewPostModal.vue'
+    import { useAppStore } from '@/stores/appStore'
     //misc
     import _orderBy from 'lodash/orderBy'
+    import { db } from '@/firebaseApp.ts'
+    //firestore
+    import { collection } from 'firebase/firestore'
+    import { useFirestore, useCollection } from 'vuefire'
 
     //firestore
+    const posts = useCollection(collection(db, 'curbside-posts'))
+    //app store
     const appStore = useAppStore()
-    const db = useFirestore()
-    const posts = useCollection(collection(db, appStore.collectionName))
     const { currentLatLon } = storeToRefs(appStore)
     //leaflet
     const map: Ref<any> = ref()
     const zoomLevel = ref(12)
     let LMap: any
-    //app
-    const navTitle: string = 'Curbside Pickup'
+    //page
     // @ts-ignore
     const listingRefs: Reactive<{}> = reactive({})
-
+    const navTitle: string = 'Curbside Pickup'
     const postsOrdered = computed(() => {
         const orderingPosts = posts.value.map(p => {
             p.distance = getDistance(p)

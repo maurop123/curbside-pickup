@@ -199,7 +199,7 @@
             }
             console.debug('saveNewPost', newDoc)
 
-            const docRef = await addDoc(collection(db, appStore.collectionName), newDoc)
+            const docRef = await addDoc(collection(db, 'curbside-posts'), newDoc)
             const storageRef = StorageRef(fbStorage, `curbside-post_${docRef.id}`)
             uploadString(storageRef, imgDataUrl.value, 'data_url')
                 .then(snapshot => {

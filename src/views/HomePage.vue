@@ -214,15 +214,14 @@
     function listingClicked(post: any) {
         console.debug('listingClicked', post)
         map.value.scrollIntoView()
-        LMap.setView([post.latitude, post.longitude], 19)
+        LMap.setView([post.latitude, post.longitude], 16)
     }
 
     // update map when coordiantes are in
-    watch(currentLatLon, (newCoords, oldCoords) => {
-        console.debug('newCoords', newCoords)
+    watch(currentLatLon, newCoords => {
         // delay to see animation
         setTimeout(() => {
-            LMap.setView(newCoords, zoomLevel.value)
+            LMap.setView(currentLatLon.value, zoomLevel.value)
         }, 500)
     })
 </script>

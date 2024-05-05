@@ -1,14 +1,24 @@
 <template>
     <ion-page>
         <ion-header :translucent="true">
-            <ion-toolbar class="cu-toolbar">
-                <ion-title>{{ navTitle }}</ion-title>
+            <ion-toolbar class="flex justify-between">
+                <ion-title slot="start">{{ navTitle }}</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button>
+                        <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
+                    </ion-button>
+                </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
-                <ion-toolbar class="cu-toolbar">
-                    <ion-title size="large">{{ navTitle }}</ion-title>
+                <ion-toolbar class="flex justify-between">
+                    <ion-title slot="start">{{ navTitle }}</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button>
+                            <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
                 </ion-toolbar>
             </ion-header>
 
@@ -77,7 +87,7 @@
     import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
     import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
     import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
-    import { add, close } from 'ionicons/icons'
+    import { add, close, personCircle } from 'ionicons/icons'
     //leaflet
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
@@ -227,14 +237,12 @@
 </script>
 
 <style scoped>
-    .cu-toolbar {
-        ion-title {
-            font-family: 'Lilita One', sans-serif;
-            font-weight: 400;
-            font-style: normal;
-            font-size: 2rem;
-            margin: 0 -0.5rem;
-        }
+    ion-title {
+        font-family: 'Lilita One', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 2rem;
+        margin: 0 -0.5rem;
     }
 
     ion-page {

@@ -1,25 +1,11 @@
 <template>
     <ion-page>
         <ion-header :translucent="true">
-            <ion-toolbar class="flex justify-between">
-                <ion-title slot="start">{{ navTitle }}</ion-title>
-                <ion-buttons slot="end">
-                    <ion-button>
-                        <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
-                    </ion-button>
-                </ion-buttons>
-            </ion-toolbar>
+            <app-navbar />
         </ion-header>
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
-                <ion-toolbar class="flex justify-between">
-                    <ion-title slot="start">{{ navTitle }}</ion-title>
-                    <ion-buttons slot="end">
-                        <ion-button>
-                            <ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
-                        </ion-button>
-                    </ion-buttons>
-                </ion-toolbar>
+                <app-navbar />
             </ion-header>
 
             <!-- Map -->
@@ -84,10 +70,21 @@
     import { onMounted, onUpdated } from 'vue'
     import { storeToRefs } from 'pinia'
     //ionic
-    import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
-    import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
-    import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
-    import { add, close, personCircle } from 'ionicons/icons'
+    import {
+        IonContent,
+        IonHeader,
+        IonPage,
+        IonTitle,
+        IonFab,
+        IonFabButton,
+        IonIcon,
+        IonButton,
+        IonModal,
+        IonGrid,
+        IonRow,
+        IonCol,
+    } from '@ionic/vue'
+    import { add, close } from 'ionicons/icons'
     //leaflet
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
@@ -96,6 +93,7 @@
     //app
     import Listing from '@/components/ListingComponent.vue'
     import NewPostContent from '@/components/NewPostModal.vue'
+    import AppNavbar from '@/components/NavbarComponent.vue'
     import { useAppStore } from '@/stores/appStore'
     //misc
     import _orderBy from 'lodash/orderBy'
@@ -110,7 +108,6 @@
     //page
     // @ts-ignore
     const listingRefs: Reactive<{}> = reactive({})
-    const navTitle: string = 'Curbside Pickup'
     const postsOrdered = computed(() => {
         const orderingPosts = posts.value.map(p => {
             p.distance = getDistance(p)

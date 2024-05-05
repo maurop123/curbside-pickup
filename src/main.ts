@@ -31,7 +31,7 @@ import './assets/tailwind.css'
 import './assets/base.css'
 
 import { initializeApp } from 'firebase/app'
-import { VueFire } from 'vuefire'
+import { VueFire, VueFireAuth } from 'vuefire'
 
 const firebaseConfig = {
     apiKey: 'AIzaSyBK1UxxKvK8UKbhz6Ez0ZizY0FomHLCuFs',
@@ -45,9 +45,13 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig)
 
 const rootStore = createPinia()
-const app = createApp(App).use(IonicVue).use(router).use(VueFire, {
-    firebaseApp,
-})
+const app = createApp(App)
+    .use(IonicVue)
+    .use(router)
+    .use(VueFire, {
+        firebaseApp,
+        modules: [VueFireAuth()],
+    })
 
 router.isReady().then(() => {
     app.use(rootStore)

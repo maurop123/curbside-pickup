@@ -32,32 +32,17 @@
 
             <!-- Post Fab -->
             <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="m-0.5">
-                <ion-fab-button id="new-post">
+                <ion-fab-button id="newPost">
                     <ion-icon :icon="addIcon" />
                 </ion-fab-button>
             </ion-fab>
 
-            <!-- Modal -->
-            <ion-modal ref="modal" trigger="new-post">
-                <ion-header>
-                    <ion-toolbar class="cu-toolbar">
-                        <ion-grid class="p-0">
-                            <ion-row>
-                                <ion-col size="10" class="p-0">
-                                    <ion-title> New Post </ion-title>
-                                </ion-col>
-                                <ion-col size="2" class="text-right pt-2 pr-2">
-                                    <ion-icon
-                                        :icon="closeIcon"
-                                        size="large"
-                                        @click="closeModal()"
-                                    ></ion-icon>
-                                </ion-col>
-                            </ion-row>
-                        </ion-grid>
-                    </ion-toolbar>
-                </ion-header>
-                <NewPostContent />
+            <!-- Modals -->
+            <ion-modal ref="modal" trigger="newPost">
+                <NewPostModal :closeModal="closeModal" ) />
+            </ion-modal>
+            <ion-modal ref="loginModal" trigger="loginButton">
+                <LoginModal :closeModal="closeLoginModal" ) />
             </ion-modal>
         </ion-content>
     </ion-page>
@@ -84,7 +69,7 @@
         IonRow,
         IonCol,
     } from '@ionic/vue'
-    import { add, close } from 'ionicons/icons'
+    import { add } from 'ionicons/icons'
     //leaflet
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
@@ -92,7 +77,8 @@
     import markerShadowPng from 'leaflet/dist/images/marker-shadow.png'
     //app
     import Listing from '@/components/ListingComponent.vue'
-    import NewPostContent from '@/components/NewPostModal.vue'
+    import NewPostModal from '@/components/NewPostModal.vue'
+    import LoginModal from '@/components/LoginModal.vue'
     import AppNavbar from '@/components/NavbarComponent.vue'
     import { useAppStore } from '@/stores/appStore'
     //misc
@@ -164,7 +150,6 @@
     })
 
     const addIcon = ref(add)
-    const closeIcon = ref(close)
 
     const modal = ref(null)
     function closeModal() {
@@ -172,6 +157,14 @@
         if (modal !== null) {
             // @ts-ignore
             modal.value.$el.dismiss(null, 'cancel')
+        }
+    }
+    const loginModal = ref(null)
+    function closeLoginModal() {
+        console.log('close')
+        if (loginModal !== null) {
+            // @ts-ignore
+            loginModal.value.$el.dismiss(null, 'cancel')
         }
     }
 
@@ -233,7 +226,7 @@
     })
 </script>
 
-<style scoped>
+<style>
     ion-title {
         font-family: 'Lilita One', sans-serif;
         font-weight: 400;
@@ -241,7 +234,9 @@
         font-size: 2rem;
         margin: 0 -0.5rem;
     }
+</style>
 
+<style scoped>
     ion-page {
         height: 100%;
     }

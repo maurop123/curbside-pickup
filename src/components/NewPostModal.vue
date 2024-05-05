@@ -1,4 +1,23 @@
 <template>
+    <ion-header>
+        <ion-toolbar>
+            <ion-grid class="p-0">
+                <ion-row>
+                    <ion-col size="10" class="p-0">
+                        <ion-title> New Post </ion-title>
+                    </ion-col>
+                    <ion-col size="2" class="text-right pt-2 pr-2">
+                        <ion-icon
+                            id="close-icon"
+                            :icon="closeIcon"
+                            size="large"
+                            @click="props.closeModal()"
+                        ></ion-icon>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-toolbar>
+    </ion-header>
     <ion-content>
         <!-- Loader -->
         <ion-grid v-if="!cameraReady" class="loadingContainer">
@@ -83,6 +102,7 @@
         IonRow,
         IonCol,
     } from '@ionic/vue'
+    import { close } from 'ionicons/icons'
     import { thumbsUp, refreshOutline } from 'ionicons/icons'
     import { getStorage, ref as StorageRef, uploadString } from 'firebase/storage'
     import { collection, addDoc } from 'firebase/firestore'
@@ -95,9 +115,11 @@
     const canvas: Ref<any> = ref(null)
     const captured: Ref<boolean> = ref(false)
     const capturedKeep: Ref<boolean> = ref(false)
+    const closeIcon = ref(close)
     const description: Ref<string> = ref('')
     const imgDataUrl: Ref<string> = ref('')
     const outputImg: Ref<any> = ref(null)
+    const props = defineProps(['closeModal'])
     const submitError = ref()
     const width: Ref<number> = ref(320)
     const height: Ref<number> = ref(0)
@@ -227,6 +249,10 @@
     }
     canvas {
         display: none;
+    }
+
+    #close-icon {
+        cursor: pointer;
     }
 
     .gallery-view {

@@ -93,17 +93,12 @@
         IonButton,
         IonContent,
         IonIcon,
-        IonList,
-        IonItem,
-        IonInput,
-        IonRange,
         IonTextarea,
         IonGrid,
         IonRow,
         IonCol,
     } from '@ionic/vue'
-    import { close } from 'ionicons/icons'
-    import { thumbsUp, refreshOutline } from 'ionicons/icons'
+    import { close, thumbsUp, refreshOutline } from 'ionicons/icons'
     import { getStorage, ref as StorageRef, uploadString } from 'firebase/storage'
     import { collection, addDoc } from 'firebase/firestore'
     import { useFirestore } from 'vuefire'

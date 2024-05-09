@@ -38,11 +38,11 @@
             </ion-fab>
 
             <!-- Modals -->
-            <ion-modal ref="modal" trigger="newPost">
-                <NewPostModal :closeModal="closeModal" ) />
-            </ion-modal>
             <ion-modal ref="loginModal" trigger="loginButton">
                 <LoginModal :closeModal="closeLoginModal" ) />
+            </ion-modal>
+            <ion-modal ref="modal" trigger="newPost">
+                <NewPostModal :closeModal="closeModal" ) />
             </ion-modal>
         </ion-content>
     </ion-page>

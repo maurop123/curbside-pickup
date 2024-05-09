@@ -2,9 +2,15 @@
 
 ![App Screenshot](public/app_screenshot.png)
 
+
 ## Alpha v1
 
-Alpha is out for development and testing. Planning for beta is underway.
+Alpha is out for testing.
+
+Beta is underway under the beta branch.
+
+Main branch is alpha.
+
 
 ## Built with
 

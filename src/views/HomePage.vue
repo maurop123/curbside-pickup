@@ -169,6 +169,7 @@
     }
 
     // Geolocation permissions request
+if (navigator?.permissions?.query) {
     console.debug('permissions obj', navigator.permissions)
     navigator.permissions.query({ name: 'geolocation' }).then(res => {
         console.log('permissions: query results', res)
@@ -178,6 +179,7 @@
             getGeolocationPermission()
         }
     })
+}
 
     function getGeolocationPermission() {
         const options = {

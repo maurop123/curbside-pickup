@@ -3,8 +3,13 @@
         <ion-title slot="start">{{ navTitle }}</ion-title>
         <ion-buttons slot="end">
             <ion-button id="loginButton">
-                <ion-text v-if="!isLoggedIn">Signup / Login</ion-text>
-                <ion-icon v-else :icon="personCircle"></ion-icon>
+                <template v-if="!isLoggedIn">
+                    <ion-icon :icon="personCircle" class="mr-1"></ion-icon>
+                    <ion-text>Login</ion-text>
+                </template>
+                <template>
+                    <ion-icon :icon="personCircle"></ion-icon>
+                </template>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>

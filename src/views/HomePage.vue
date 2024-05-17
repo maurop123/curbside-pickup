@@ -38,12 +38,14 @@
             </ion-fab>
 
             <!-- Modals -->
-            <ion-modal ref="loginModal" trigger="loginButton">
-                <LoginModal :closeModal="closeLoginModal" />
-            </ion-modal>
+            <LoginModal trigger="loginButton" />
             <ion-modal ref="modal" trigger="newPost">
                 <NewPostModal :closeModal="closeModal" />
             </ion-modal>
+
+            <!-- Action Sheet -->
+            <ion-action-sheet trigger="logoutButton" :buttons="actionSheetButtons">
+            </ion-action-sheet>
         </ion-content>
     </ion-page>
 </template>
@@ -81,6 +83,9 @@
     import LoginModal from '@/components/LoginModal.vue'
     import AppNavbar from '@/components/NavbarComponent.vue'
     import { useAppStore } from '@/stores/appStore'
+    //auth
+    import { signOut } from 'firebase/auth'
+    import { auth } from '@/firebaseApp'
     //misc
     import _orderBy from 'lodash/orderBy'
 
@@ -159,14 +164,6 @@
             modal.value.$el.dismiss(null, 'cancel')
         }
     }
-    const loginModal = ref(null)
-    function closeLoginModal() {
-        console.log('close')
-        if (loginModal !== null) {
-            // @ts-ignore
-            loginModal.value.$el.dismiss(null, 'cancel')
-        }
-    }
 
     // Geolocation permissions request
     console.debug('permissions obj', navigator.permissions)
@@ -224,6 +221,23 @@
             LMap.setView(currentLatLon.value, zoomLevel.value)
         }, 500)
     })
+
+    const actionSheetButtons = [
+        {
+            text: 'Logout',
+            handler: logout,
+        },
+    ]
+
+    function logout() {
+        signOut(auth)
+            .then(() => {
+                console.debug('logged out')
+            })
+            .catch(err => {
+                console.error(err)
+            })
+    }
 </script>
 
 <style>

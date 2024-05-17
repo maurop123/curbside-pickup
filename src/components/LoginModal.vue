@@ -1,57 +1,59 @@
 <template>
-    <ion-header>
-        <ion-toolbar>
-            <ion-grid class="p-0">
+    <ion-modal ref="modal">
+        <ion-header>
+            <ion-toolbar>
+                <ion-grid class="p-0">
+                    <ion-row>
+                        <ion-col size="10" class="p-0">
+                            <ion-title v-if="!createAccount"> Login </ion-title>
+                            <ion-title v-else> Signup </ion-title>
+                        </ion-col>
+                        <ion-col size="2" class="text-right pt-2 pr-2">
+                            <ion-icon
+                                id="close-icon"
+                                :icon="closeIcon"
+                                size="large"
+                                @click="closeModal()"
+                            ></ion-icon>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <ion-grid>
                 <ion-row>
-                    <ion-col size="10" class="p-0">
-                        <ion-title v-if="!createAccount"> Login </ion-title>
-                        <ion-title v-else> Signup </ion-title>
+                    <ion-col size="12">
+                        <ion-input
+                            label="Email"
+                            label-placement="stacked"
+                            placeholder="youremail@domain.com"
+                            v-model="email"
+                        ></ion-input>
+                        <ion-input
+                            label="Password"
+                            label-placement="stacked"
+                            placeholder="********"
+                            v-model="password"
+                            type="password"
+                        ></ion-input>
+                        <ion-button v-if="!createAccount" @click="login">
+                            <ion-text> Login </ion-text>
+                        </ion-button>
+                        <ion-button v-else @click="signup">
+                            <ion-text> Signup </ion-text>
+                        </ion-button>
                     </ion-col>
-                    <ion-col size="2" class="text-right pt-2 pr-2">
-                        <ion-icon
-                            id="close-icon"
-                            :icon="closeIcon"
-                            size="large"
-                            @click="props.closeModal()"
-                        ></ion-icon>
+                    <ion-col size="12" class="text-sm" v-if="!createAccount">
+                        Don't have an account? <a href="#" @click="goToSignup">Sign up</a>
+                    </ion-col>
+                    <ion-col size="12" class="text-sm" v-else>
+                        Already have an account? <a href="#" @click="goToLogin">Log in</a>
                     </ion-col>
                 </ion-row>
             </ion-grid>
-        </ion-toolbar>
-    </ion-header>
-    <ion-content>
-        <ion-grid>
-            <ion-row>
-                <ion-col size="12">
-                    <ion-input
-                        label="Email"
-                        label-placement="stacked"
-                        placeholder="youremail@domain.com"
-                        v-model="email"
-                    ></ion-input>
-                    <ion-input
-                        label="Password"
-                        label-placement="stacked"
-                        placeholder="********"
-                        v-model="password"
-                        type="password"
-                    ></ion-input>
-                    <ion-button v-if="!createAccount" @click="login">
-                        <ion-text> Login </ion-text>
-                    </ion-button>
-                    <ion-button v-else @click="signup">
-                        <ion-text> Signup </ion-text>
-                    </ion-button>
-                </ion-col>
-                <ion-col size="12" class="text-sm" v-if="!createAccount">
-                    Don't have an account? <a href="#" @click="goToSignup">Sign up</a>
-                </ion-col>
-                <ion-col size="12" class="text-sm" v-else>
-                    Already have an account? <a href="#" @click="goToLogin">Log in</a>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </ion-content>
+        </ion-content>
+    </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -78,6 +80,15 @@
     const createAccount: Ref<boolean> = ref(false)
     const email: Ref<string> = ref('')
     const password: Ref<string> = ref('')
+    const modal = ref(null)
+
+    function closeModal() {
+        console.debug('close login modal', modal)
+        if (modal !== null) {
+            // @ts-ignore
+            modal.value.dismiss(null, 'cancel')
+        }
+    }
 
     function goToSignup(e) {
         e.preventDefault()
@@ -100,6 +111,7 @@
             signInWithEmailAndPassword(auth, email.value, password.value)
                 .then(userCredential => {
                     console.debug('userCredential', userCredential)
+                    closeModal()
                 })
                 .catch(err => {
                     console.error(err)
@@ -118,6 +130,7 @@
             createUserWithEmailAndPassword(auth, email.value, password.value)
                 .then(userCredential => {
                     console.debug('userCredential', userCredential)
+                    login()
                 })
                 .catch(err => {
                     console.error(err)
@@ -141,5 +154,9 @@
         &:hover {
             text-decoration: underline;
         }
+    }
+
+    #close-icon {
+        cursor: pointer;
     }
 </style>

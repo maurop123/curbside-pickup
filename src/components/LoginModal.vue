@@ -115,9 +115,11 @@
         if (!validateEmail(email.value)) {
             console.error('Invalid email')
             console.debug(email.value)
+            loading.value = false
         } else if (!validatePassword(password.value)) {
             console.error('Invalid password')
             console.debug(password.value)
+            loading.value = false
         } else {
             signInWithEmailAndPassword(auth, email.value, password.value)
                 .then(userCredential => {
@@ -126,8 +128,8 @@
                     closeModal()
                 })
                 .catch(err => {
-                    loading.value = false
                     console.error(err)
+                    loading.value = false
                 })
         }
     }
@@ -137,9 +139,11 @@
         if (!validateEmail(email.value)) {
             console.error('Invalid email')
             console.debug(email.value)
+            loading.value = false
         } else if (!validatePassword(password.value)) {
             console.error('Invalid password')
             console.debug(password.value)
+            loading.value = false
         } else {
             createUserWithEmailAndPassword(auth, email.value, password.value)
                 .then(userCredential => {

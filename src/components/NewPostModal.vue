@@ -262,11 +262,6 @@
         width: 73px;
     }
 
-    .loadingContainer ion-icon {
-        font-size: 4rem;
-        margin-bottom: 2rem;
-    }
-
     ion-icon.loading {
         animation: loading 1.5s linear infinite;
     }
@@ -289,6 +284,11 @@
         display: flex;
         flex-flow: column;
         justify-content: center;
+
+        & ion-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
     }
 
     .form {

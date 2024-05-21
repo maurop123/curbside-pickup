@@ -21,7 +21,7 @@
             </ion-toolbar>
         </ion-header>
         <ion-content>
-            <ion-grid>
+            <ion-grid v-show="!loading">
                 <ion-row>
                     <ion-col size="12">
                         <ion-input
@@ -52,13 +52,18 @@
                     </ion-col>
                 </ion-row>
             </ion-grid>
+            <ion-grid v-show="loading">
+                <ion-spinner />
+            </ion-grid>
         </ion-content>
     </ion-modal>
 </template>
 
 <script setup lang="ts">
+    //vue
     import { ref } from 'vue'
     import type { Ref } from 'vue'
+    //ionic
     import {
         IonContent,
         IonGrid,
@@ -71,15 +76,20 @@
         IonButton,
         IonText,
         IonInput,
+        IonSpinner,
     } from '@ionic/vue'
     import { close } from 'ionicons/icons'
+    //auth
     import { auth } from '@/firebaseApp'
     import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 
-    const closeIcon = ref(close)
+    //login
     const createAccount: Ref<boolean> = ref(false)
+    const loading: Ref<boolean> = ref(false)
     const email: Ref<string> = ref('')
     const password: Ref<string> = ref('')
+    //modal
+    const closeIcon = ref(close)
     const modal = ref(null)
 
     function closeModal() {
@@ -101,6 +111,7 @@
     }
 
     function login() {
+        loading.value = true
         if (!validateEmail(email.value)) {
             console.error('Invalid email')
             console.debug(email.value)
@@ -110,16 +121,19 @@
         } else {
             signInWithEmailAndPassword(auth, email.value, password.value)
                 .then(userCredential => {
+                    loading.value = false
                     console.debug('userCredential', userCredential)
                     closeModal()
                 })
                 .catch(err => {
+                    loading.value = false
                     console.error(err)
                 })
         }
     }
 
     function signup() {
+        loading.value = true
         if (!validateEmail(email.value)) {
             console.error('Invalid email')
             console.debug(email.value)
@@ -129,10 +143,12 @@
         } else {
             createUserWithEmailAndPassword(auth, email.value, password.value)
                 .then(userCredential => {
+                    loading.value = false
                     console.debug('userCredential', userCredential)
                     login()
                 })
                 .catch(err => {
+                    loading.value = false
                     console.error(err)
                 })
         }

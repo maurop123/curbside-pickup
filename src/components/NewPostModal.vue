@@ -104,7 +104,7 @@
     import { close, thumbsUp, refreshOutline } from 'ionicons/icons'
     import { getStorage, ref as StorageRef, uploadString } from 'firebase/storage'
     import { collection, addDoc } from 'firebase/firestore'
-    import { useFirestore } from 'vuefire'
+    import { useCurrentUser, useFirestore } from 'vuefire'
     import { useAppStore } from '@/stores/appStore'
 
     const activelySaving: Ref<boolean> = ref(false)
@@ -215,7 +215,8 @@
                 description: description.value,
                 latitude: appStore.coordinates.latitude,
                 longitude: appStore.coordinates.longitude,
-                version: 2,
+                uid: useCurrentUser().value.uid,
+                version: 3,
             }
             console.debug('saveNewPost', newDoc)
 

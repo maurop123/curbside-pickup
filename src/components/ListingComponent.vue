@@ -29,7 +29,6 @@
 
     //app
     const props = defineProps(['post', 'distance'])
-    console.debug('Listing props', props.post)
     const listingImage = ref()
     //firebase
     const storage = getStorage()
@@ -40,7 +39,6 @@
     })
 
     const postDate = computed(() => {
-        console.debug('postDate', props.post.createdAt)
         return formatDistance(new Date(props.post.createdAt), new Date(), { addSuffix: true })
     })
 </script>

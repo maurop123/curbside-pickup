@@ -1,15 +1,11 @@
 <template>
     <ion-page>
         <ion-header :translucent="true">
-            <ion-toolbar class="cu-toolbar">
-                <ion-title>{{ navTitle }}</ion-title>
-            </ion-toolbar>
+            <app-navbar @openLogin="openLoginModal" />
         </ion-header>
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
-                <ion-toolbar class="cu-toolbar">
-                    <ion-title size="large">{{ navTitle }}</ion-title>
-                </ion-toolbar>
+                <app-navbar />
             </ion-header>
 
             <!-- Map -->
@@ -17,6 +13,7 @@
                 <div id="map" ref="map" />
             </div>
 
+            <!-- Listings -->
             <div id="listings">
                 <div
                     v-for="(post, i) in postsOrdered"
@@ -36,33 +33,40 @@
 
             <!-- Post Fab -->
             <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="m-0.5">
-                <ion-fab-button id="new-post">
+                <ion-fab-button @click="openNewPostModal">
                     <ion-icon :icon="addIcon" />
                 </ion-fab-button>
             </ion-fab>
 
-            <!-- Modal -->
-            <ion-modal ref="modal" trigger="new-post">
-                <ion-header>
-                    <ion-toolbar class="cu-toolbar">
-                        <ion-grid class="p-0">
-                            <ion-row>
-                                <ion-col size="10" class="p-0">
-                                    <ion-title> New Post </ion-title>
-                                </ion-col>
-                                <ion-col size="2" class="text-right pt-2 pr-2">
-                                    <ion-icon
-                                        :icon="closeIcon"
-                                        size="large"
-                                        @click="closeModal()"
-                                    ></ion-icon>
-                                </ion-col>
-                            </ion-row>
-                        </ion-grid>
-                    </ion-toolbar>
-                </ion-header>
-                <NewPostContent />
-            </ion-modal>
+            <!-- Modals -->
+            <LoginModal
+                v-if="hasLoginModalOpened"
+                :is-open="isLoginModalOpen"
+                @dismiss="isLoginModalOpen = false"
+            />
+            <NewPostModal
+                v-if="hasNewPostModalOpened"
+                :is-open="isNewPostModalOpen"
+                @dismiss="isNewPostModalOpen = false"
+            />
+
+            <!-- Action Sheet -->
+            <ion-action-sheet trigger="logoutButton" :buttons="actionSheetButtons">
+            </ion-action-sheet>
+
+            <!-- Toast -->
+            <ion-toast
+                :is-open="toastIsOpen"
+                message="You must be logged in to do that"
+                :duration="toastLimit"
+                position="bottom"
+                :buttons="[
+                    {
+                        text: 'dismiss',
+                        role: 'cancel',
+                    },
+                ]"
+            />
         </ion-content>
     </ion-page>
 </template>
@@ -74,10 +78,22 @@
     import { onMounted, onUpdated } from 'vue'
     import { storeToRefs } from 'pinia'
     //ionic
-    import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
-    import { IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/vue'
-    import { IonModal, IonGrid, IonRow, IonCol } from '@ionic/vue'
-    import { add, close } from 'ionicons/icons'
+    import {
+        IonContent,
+        IonHeader,
+        IonPage,
+        IonTitle,
+        IonFab,
+        IonFabButton,
+        IonIcon,
+        IonButton,
+        IonModal,
+        IonGrid,
+        IonRow,
+        IonCol,
+        IonToast,
+    } from '@ionic/vue'
+    import { add } from 'ionicons/icons'
     //leaflet
     import Leaflet from 'leaflet'
     import 'leaflet/dist/leaflet.css'
@@ -85,8 +101,14 @@
     import markerShadowPng from 'leaflet/dist/images/marker-shadow.png'
     //app
     import Listing from '@/components/ListingComponent.vue'
-    import NewPostContent from '@/components/NewPostModal.vue'
+    import NewPostModal from '@/components/NewPostModal.vue'
+    import LoginModal from '@/components/LoginModal.vue'
+    import AppNavbar from '@/components/NavbarComponent.vue'
     import { useAppStore } from '@/stores/appStore'
+    //auth
+    import { signOut } from 'firebase/auth'
+    import { auth } from '@/firebaseApp'
+    import { useCurrentUser } from 'vuefire'
     //misc
     import _orderBy from 'lodash/orderBy'
 
@@ -98,89 +120,32 @@
     const zoomLevel = ref(12)
     let LMap: any
     //page
+    const actionSheetButtons = [
+        {
+            text: 'Logout',
+            handler: logout,
+        },
+    ]
+    const addIcon: Ref<any> = ref(add)
+    const hasLoginModalOpened: Ref<boolean> = ref(false)
+    const isLoginModalOpen: Ref<boolean> = ref(false)
+    const hasNewPostModalOpened: Ref<boolean> = ref(false)
+    const isNewPostModalOpen: Ref<boolean> = ref(false)
     // @ts-ignore
     const listingRefs: Reactive<{}> = reactive({})
-    const navTitle: string = 'Curbside Pickup'
     const postsOrdered = computed(() => {
         const orderingPosts = posts.value.map(p => {
             p.distance = getDistance(p)
-            console.debug('p.distance', p.distance)
             return p
         })
         return _orderBy(posts.value, ['createdAt', 'distance'], ['desc', 'asc'])
     })
+    const toastIsOpen: Ref<boolean> = ref(false)
+    const toastLimit: number = 5000
 
-    onMounted(() => {
-        // Set Map
-        LMap = Leaflet.map(map.value).setView(currentLatLon.value, zoomLevel.value)
-        Leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution:
-                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }).addTo(LMap)
-
-        // Fix map loadout
-        setTimeout(() => {
-            LMap.invalidateSize()
-        }, 100)
-    })
-
-    function markerClick(post: any) {
-        console.debug('markerClick', post, listingRefs)
-        listingRefs[post.id].scrollIntoView()
-        listingRefs[post.id].setAttribute('class', 'selected')
-        setTimeout(() => {
-            listingRefs[post.id].setAttribute('class', '')
-        }, 3000)
-    }
-
-    // Add pins when posts load
-    watch(posts, newPosts => {
-        posts.value.forEach(post => {
-            console.debug('Adding marker to', post)
-            const lat = post?.latitude
-            const lon = post?.longitude
-            if (lat && lon) {
-                Leaflet.marker([lat, lon], {
-                    icon: Leaflet.icon({
-                        iconUrl: markerIconPng,
-                        shadowUrl: markerShadowPng,
-                    }),
-                })
-                    .on('click', () => {
-                        markerClick(post)
-                    })
-                    .addTo(LMap)
-            } else {
-                console.error('Could not find latitude or longitude for this post', post)
-            }
-        })
-    })
-
-    const addIcon = ref(add)
-    const closeIcon = ref(close)
-
-    const modal = ref(null)
-    function closeModal() {
-        console.log('close')
-        if (modal !== null) {
-            // @ts-ignore
-            modal.value.$el.dismiss(null, 'cancel')
-        }
-    }
-
-    // Geolocation permissions request
-if (navigator?.permissions?.query) {
-    console.debug('permissions obj', navigator.permissions)
-    navigator.permissions.query({ name: 'geolocation' }).then(res => {
-        console.log('permissions: query results', res)
-        if (res.state === 'prompt') {
-            getGeolocationPermission()
-        } else if (res.state === 'granted') {
-            getGeolocationPermission()
-        }
-    })
-}
-
+    //
+    // Methods
+    //
     function getGeolocationPermission() {
         const options = {
             enableHighAccuracy: true,
@@ -209,7 +174,6 @@ if (navigator?.permissions?.query) {
 
     function getDistance(post: any) {
         const distance = LMap.distance(currentLatLon.value, [post.latitude, post.longitude])
-        console.debug('distance', distance)
         return Math.round((distance / 1000) * 0.6213712 * 10) / 10 // km to mi rounded to 1 decimal
     }
 
@@ -219,26 +183,115 @@ if (navigator?.permissions?.query) {
         LMap.setView([post.latitude, post.longitude], 16)
     }
 
-    // update map when coordiantes are in
+    function logout() {
+        signOut(auth)
+            .then(() => {
+                console.debug('logged out')
+            })
+            .catch(err => {
+                console.error(err)
+            })
+    }
+
+    function markerClick(post: any) {
+        console.debug('markerClick', post, listingRefs)
+        listingRefs[post.id].scrollIntoView()
+        listingRefs[post.id].setAttribute('class', 'selected')
+        setTimeout(() => {
+            listingRefs[post.id].setAttribute('class', '')
+        }, 3000)
+    }
+
+    function openLoginModal() {
+        hasLoginModalOpened.value = true
+        isLoginModalOpen.value = true
+    }
+
+    function openNewPostModal() {
+        console.debug('openNewPostModal', useCurrentUser().value)
+        if (useCurrentUser().value === null) {
+            toastIsOpen.value = true
+            setTimeout(() => {
+                toastIsOpen.value = false
+            }, toastLimit)
+        } else {
+            hasNewPostModalOpened.value = true
+            isNewPostModalOpen.value = true
+        }
+    }
+
+    //
+    // Lifecycle Hooks
+    //
+    onMounted(() => {
+        // Set Map
+        LMap = Leaflet.map(map.value).setView(currentLatLon.value, zoomLevel.value)
+        Leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution:
+                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(LMap)
+
+        // Fix map loadout
+        setTimeout(() => {
+            LMap.invalidateSize()
+        }, 100)
+    })
+
+    // Add pins when posts load
+    watch(posts, newPosts => {
+        posts.value.forEach(post => {
+            const lat = post?.latitude
+            const lon = post?.longitude
+            if (lat && lon) {
+                Leaflet.marker([lat, lon], {
+                    icon: Leaflet.icon({
+                        iconUrl: markerIconPng,
+                        shadowUrl: markerShadowPng,
+                    }),
+                })
+                    .on('click', () => {
+                        markerClick(post)
+                    })
+                    .addTo(LMap)
+            } else {
+                console.error('Could not find latitude or longitude for this post', post)
+            }
+        })
+    })
+
+    // Update map when coordiantes are in
     watch(currentLatLon, newCoords => {
         // delay to see animation
         setTimeout(() => {
             LMap.setView(currentLatLon.value, zoomLevel.value)
         }, 500)
     })
+
+    // Geolocation permissions request
+if (navigator?.permissions?.query) {
+    console.debug('permissions obj', navigator.permissions)
+    navigator.permissions.query({ name: 'geolocation' }).then(res => {
+        console.log('permissions: query results', res)
+        if (res.state === 'prompt') {
+            getGeolocationPermission()
+        } else if (res.state === 'granted') {
+            getGeolocationPermission()
+        }
+    })
+}
 </script>
 
-<style scoped>
-    .cu-toolbar {
-        ion-title {
-            font-family: 'Lilita One', sans-serif;
-            font-weight: 400;
-            font-style: normal;
-            font-size: 2rem;
-            margin: 0 -0.5rem;
-        }
+<style>
+    ion-title {
+        font-family: 'Lilita One', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 2rem;
+        margin: 0 -0.5rem;
     }
+</style>
 
+<style scoped>
     ion-page {
         height: 100%;
     }

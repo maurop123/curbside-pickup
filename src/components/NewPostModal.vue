@@ -1,70 +1,91 @@
 <template>
-    <ion-content>
-        <!-- Loader -->
-        <ion-grid v-if="!cameraReady" class="loadingContainer">
-            <ion-row class="ion-justify-content-center">
-                <ion-icon class="loading" :icon="refreshOutline"></ion-icon>
-            </ion-row>
-            <ion-row class="ion-justify-content-center">
-                <p class="loadingText">Requesting camera permissions</p>
-            </ion-row>
-        </ion-grid>
-        <ion-grid v-show="cameraReady" class="cameraGrid">
-            <!-- Video/Camera -->
-            <ion-row v-show="!captured">
-                <video ref="camera" loop muted autoplay @canplay="canplay()">
-                    <source src="" />
-                </video>
-            </ion-row>
-            <ion-row v-show="captured">
-                <canvas ref="canvas"></canvas>
-                <div class="gallery-view">
-                    <img ref="outputImg" />
-                </div>
-            </ion-row>
+    <ion-modal>
+        <ion-header>
+            <ion-toolbar>
+                <ion-grid class="p-0">
+                    <ion-row>
+                        <ion-col size="10" class="p-0">
+                            <ion-title> New Post </ion-title>
+                        </ion-col>
+                        <ion-col size="2" class="text-right pt-2 pr-2">
+                            <ion-icon
+                                id="close-icon"
+                                :icon="closeIcon"
+                                size="large"
+                                @click="$emit('dismiss')"
+                            ></ion-icon>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <!-- Loader -->
+            <ion-grid v-if="!cameraReady" class="loadingContainer">
+                <ion-row class="ion-justify-content-center">
+                    <ion-icon class="loading" :icon="refreshOutline"></ion-icon>
+                </ion-row>
+                <ion-row class="ion-justify-content-center">
+                    <p class="loadingText">Requesting camera permissions</p>
+                </ion-row>
+            </ion-grid>
+            <ion-grid v-show="cameraReady" class="cameraGrid">
+                <!-- Video/Camera -->
+                <ion-row v-show="!captured">
+                    <video ref="camera" loop muted autoplay @canplay="canplay()">
+                        <source src="" />
+                    </video>
+                </ion-row>
+                <ion-row v-show="captured">
+                    <canvas ref="canvas"></canvas>
+                    <div class="gallery-view">
+                        <img ref="outputImg" />
+                    </div>
+                </ion-row>
 
-            <!-- Capture Buttons -->
-            <ion-row v-if="!captured" class="ion-justify-content-center">
-                <ion-button @click="capture()"> Capture </ion-button>
-            </ion-row>
-            <ion-row v-else class="ion-justify-content-center">
-                <ion-button
-                    color="danger"
-                    @click="clearCapture()"
-                    :fill="capturedKeep ? 'outline' : 'solid'"
-                >
-                    Retry
-                </ion-button>
-                <ion-button color="success" @click="capturedKeep = !capturedKeep">
-                    Keep
-                    <ion-icon v-if="capturedKeep" slot="end" :icon="thumbsUp"></ion-icon>
-                </ion-button>
-            </ion-row>
-        </ion-grid>
+                <!-- Capture Buttons -->
+                <ion-row v-if="!captured" class="ion-justify-content-center">
+                    <ion-button @click="capture()"> Capture </ion-button>
+                </ion-row>
+                <ion-row v-else class="ion-justify-content-center">
+                    <ion-button
+                        color="danger"
+                        @click="clearCapture()"
+                        :fill="capturedKeep ? 'outline' : 'solid'"
+                    >
+                        Retry
+                    </ion-button>
+                    <ion-button color="success" @click="capturedKeep = !capturedKeep">
+                        Keep
+                        <ion-icon v-if="capturedKeep" slot="end" :icon="thumbsUp"></ion-icon>
+                    </ion-button>
+                </ion-row>
+            </ion-grid>
 
-        <!-- Rest of the form -->
-        <ion-grid v-if="capturedKeep" class="form p-2.5">
-            <ion-row class="inputRow">
-                <p>Description</p>
-                <ion-textarea
-                    v-model="description"
-                    placeholder="Describe the item, its condition, location, etc..."
-                ></ion-textarea>
-            </ion-row>
-            <ion-row>
-                <ion-button @click="saveNewPost" class="postButton">
-                    <span v-if="!activelySaving">Post</span>
-                    <ion-icon v-else :icon="refreshOutline" class="loading"></ion-icon>
-                </ion-button>
-                <div class="submitText">
-                    <p v-if="submitError" class="submitError">
-                        {{ submitError }}
-                    </p>
-                    <p v-else-if="activelySaving">Please wait...</p>
-                </div>
-            </ion-row>
-        </ion-grid>
-    </ion-content>
+            <!-- Rest of the form -->
+            <ion-grid v-if="capturedKeep" class="form p-2.5">
+                <ion-row class="inputRow">
+                    <p>Description</p>
+                    <ion-textarea
+                        v-model="description"
+                        placeholder="Describe the item, its condition, location, etc..."
+                    ></ion-textarea>
+                </ion-row>
+                <ion-row>
+                    <ion-button @click="saveNewPost" class="postButton">
+                        <span v-if="!activelySaving">Post</span>
+                        <ion-icon v-else :icon="refreshOutline" class="loading"></ion-icon>
+                    </ion-button>
+                    <div class="submitText">
+                        <p v-if="submitError" class="submitError">
+                            {{ submitError }}
+                        </p>
+                        <p v-else-if="activelySaving">Please wait...</p>
+                    </div>
+                </ion-row>
+            </ion-grid>
+        </ion-content>
+    </ion-modal>
 </template>
 
 <script setup lang="ts">
@@ -74,19 +95,16 @@
         IonButton,
         IonContent,
         IonIcon,
-        IonList,
-        IonItem,
-        IonInput,
-        IonRange,
         IonTextarea,
         IonGrid,
         IonRow,
         IonCol,
+        IonModal,
     } from '@ionic/vue'
-    import { thumbsUp, refreshOutline } from 'ionicons/icons'
+    import { close, thumbsUp, refreshOutline } from 'ionicons/icons'
     import { getStorage, ref as StorageRef, uploadString } from 'firebase/storage'
     import { collection, addDoc } from 'firebase/firestore'
-    import { useFirestore } from 'vuefire'
+    import { useCurrentUser, useFirestore } from 'vuefire'
     import { useAppStore } from '@/stores/appStore'
 
     const activelySaving: Ref<boolean> = ref(false)
@@ -95,8 +113,10 @@
     const canvas: Ref<any> = ref(null)
     const captured: Ref<boolean> = ref(false)
     const capturedKeep: Ref<boolean> = ref(false)
+    const closeIcon = ref(close)
     const description: Ref<string> = ref('')
     const imgDataUrl: Ref<string> = ref('')
+    const modal: Ref<any> = ref(null)
     const outputImg: Ref<any> = ref(null)
     const submitError = ref()
     const width: Ref<number> = ref(320)
@@ -195,7 +215,9 @@
                 description: description.value,
                 latitude: appStore.coordinates.latitude,
                 longitude: appStore.coordinates.longitude,
-                version: 2,
+                // @ts-ignore
+                uid: useCurrentUser().value.uid,
+                version: 3,
             }
             console.debug('saveNewPost', newDoc)
 
@@ -229,6 +251,10 @@
         display: none;
     }
 
+    #close-icon {
+        cursor: pointer;
+    }
+
     .gallery-view {
         width: 100%;
 
@@ -239,11 +265,6 @@
 
     .postButton {
         width: 73px;
-    }
-
-    .loadingContainer ion-icon {
-        font-size: 4rem;
-        margin-bottom: 2rem;
     }
 
     ion-icon.loading {
@@ -268,6 +289,11 @@
         display: flex;
         flex-flow: column;
         justify-content: center;
+
+        & ion-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
     }
 
     .form {

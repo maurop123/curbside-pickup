@@ -1,7 +1,7 @@
 <template>
     <ion-page>
         <ion-header :translucent="true">
-            <app-navbar />
+            <app-navbar @openLogin="openLoginModal" />
         </ion-header>
         <ion-content :fullscreen="true">
             <ion-header collapse="condense">
@@ -33,16 +33,22 @@
 
             <!-- Post Fab -->
             <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="m-0.5">
-                <ion-fab-button id="newPost">
+                <ion-fab-button @click="openNewPostModal">
                     <ion-icon :icon="addIcon" />
                 </ion-fab-button>
             </ion-fab>
 
             <!-- Modals -->
-            <LoginModal trigger="loginButton" />
-            <ion-modal ref="modal" trigger="newPost" @willPresent="checkLogin">
-                <NewPostModal :closeModal="closeModal" />
-            </ion-modal>
+            <LoginModal
+                v-if="hasLoginModalOpened"
+                :is-open="isLoginModalOpen"
+                @dismiss="isLoginModalOpen = false"
+            />
+            <NewPostModal
+                v-if="hasNewPostModalOpened"
+                :is-open="isNewPostModalOpen"
+                @dismiss="isNewPostModalOpen = false"
+            />
 
             <!-- Action Sheet -->
             <ion-action-sheet trigger="logoutButton" :buttons="actionSheetButtons">
@@ -102,6 +108,7 @@
     //auth
     import { signOut } from 'firebase/auth'
     import { auth } from '@/firebaseApp'
+    import { useCurrentUser } from 'vuefire'
     //misc
     import _orderBy from 'lodash/orderBy'
 
@@ -113,6 +120,11 @@
     const zoomLevel = ref(12)
     let LMap: any
     //page
+    const addIcon: Ref<any> = ref(add)
+    const hasLoginModalOpened: Ref<boolean> = ref(false)
+    const isLoginModalOpen: Ref<boolean> = ref(false)
+    const hasNewPostModalOpened: Ref<boolean> = ref(false)
+    const isNewPostModalOpen: Ref<boolean> = ref(false)
     // @ts-ignore
     const listingRefs: Reactive<{}> = reactive({})
     const postsOrdered = computed(() => {
@@ -123,6 +135,7 @@
         return _orderBy(posts.value, ['createdAt', 'distance'], ['desc', 'asc'])
     })
     const toastIsOpen: Ref<boolean> = ref(false)
+    const toastLimit: number = 5000
 
     onMounted(() => {
         // Set Map
@@ -137,6 +150,24 @@
             LMap.invalidateSize()
         }, 100)
     })
+
+    function openLoginModal() {
+        hasLoginModalOpened.value = true
+        isLoginModalOpen.value = true
+    }
+
+    function openNewPostModal() {
+        console.debug('openNewPostModal', useCurrentUser().value)
+        if (useCurrentUser().value === null) {
+            toastIsOpen.value = true
+            setTimeout(() => {
+                toastIsOpen.value = false
+            }, toastLimit)
+        } else {
+            hasNewPostModalOpened.value = true
+            isNewPostModalOpen.value = true
+        }
+    }
 
     function markerClick(post: any) {
         console.debug('markerClick', post, listingRefs)
@@ -168,17 +199,6 @@
             }
         })
     })
-
-    const addIcon = ref(add)
-
-    const modal = ref(null)
-    function closeModal() {
-        console.log('close')
-        if (modal !== null) {
-            // @ts-ignore
-            modal.value.$el.dismiss(null, 'cancel')
-        }
-    }
 
     // Geolocation permissions request
     console.debug('permissions obj', navigator.permissions)
@@ -252,15 +272,6 @@
                 console.error(err)
             })
     }
-
-    function checkLogin(e) {
-        e.target.dismiss()
-        toastIsOpen.value = true
-        setTimeout(() => {
-            toastIsOpen.value = false
-        }, toastLimit)
-    }
-    const toastLimit = 5000
 </script>
 
 <style>

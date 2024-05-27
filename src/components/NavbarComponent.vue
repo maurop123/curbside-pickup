@@ -2,7 +2,7 @@
     <ion-toolbar class="flex justify-between">
         <ion-title slot="start">{{ navTitle }}</ion-title>
         <ion-buttons slot="end">
-            <ion-button id="loginButton" v-show="!isLoggedIn">
+            <ion-button v-show="!isLoggedIn" @click="$emit('openLogin')">
                 <ion-icon :icon="personCircle" class="mr-1"></ion-icon>
                 <ion-text>Login</ion-text>
             </ion-button>

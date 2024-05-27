@@ -1,5 +1,5 @@
 <template>
-    <ion-modal ref="modal">
+    <ion-modal>
         <ion-header>
             <ion-toolbar>
                 <ion-grid class="p-0">
@@ -13,7 +13,7 @@
                                 id="close-icon"
                                 :icon="closeIcon"
                                 size="large"
-                                @click="closeModal()"
+                                @click="$emit('dismiss')"
                             ></ion-icon>
                         </ion-col>
                     </ion-row>
@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
     //vue
-    import { ref } from 'vue'
+    import { defineEmits, ref } from 'vue'
     import type { Ref } from 'vue'
     //ionic
     import {
@@ -77,6 +77,7 @@
         IonText,
         IonInput,
         IonSpinner,
+        IonModal,
     } from '@ionic/vue'
     import { close } from 'ionicons/icons'
     //auth
@@ -90,15 +91,7 @@
     const password: Ref<string> = ref('')
     //modal
     const closeIcon = ref(close)
-    const modal = ref(null)
-
-    function closeModal() {
-        console.debug('close login modal', modal)
-        if (modal !== null) {
-            // @ts-ignore
-            modal.value.dismiss(null, 'cancel')
-        }
-    }
+    const emit = defineEmits(['dismiss'])
 
     function goToSignup(e) {
         e.preventDefault()
@@ -125,7 +118,7 @@
                 .then(userCredential => {
                     loading.value = false
                     console.debug('userCredential', userCredential)
-                    closeModal()
+                    emit('dismiss')
                 })
                 .catch(err => {
                     console.error(err)

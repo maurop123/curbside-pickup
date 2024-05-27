@@ -120,6 +120,12 @@
     const zoomLevel = ref(12)
     let LMap: any
     //page
+    const actionSheetButtons = [
+        {
+            text: 'Logout',
+            handler: logout,
+        },
+    ]
     const addIcon: Ref<any> = ref(add)
     const hasLoginModalOpened: Ref<boolean> = ref(false)
     const isLoginModalOpen: Ref<boolean> = ref(false)
@@ -137,80 +143,9 @@
     const toastIsOpen: Ref<boolean> = ref(false)
     const toastLimit: number = 5000
 
-    onMounted(() => {
-        // Set Map
-        LMap = Leaflet.map(map.value).setView(currentLatLon.value, zoomLevel.value)
-        Leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution:
-                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }).addTo(LMap)
-
-        // Fix map loadout
-        setTimeout(() => {
-            LMap.invalidateSize()
-        }, 100)
-    })
-
-    function openLoginModal() {
-        hasLoginModalOpened.value = true
-        isLoginModalOpen.value = true
-    }
-
-    function openNewPostModal() {
-        console.debug('openNewPostModal', useCurrentUser().value)
-        if (useCurrentUser().value === null) {
-            toastIsOpen.value = true
-            setTimeout(() => {
-                toastIsOpen.value = false
-            }, toastLimit)
-        } else {
-            hasNewPostModalOpened.value = true
-            isNewPostModalOpen.value = true
-        }
-    }
-
-    function markerClick(post: any) {
-        console.debug('markerClick', post, listingRefs)
-        listingRefs[post.id].scrollIntoView()
-        listingRefs[post.id].setAttribute('class', 'selected')
-        setTimeout(() => {
-            listingRefs[post.id].setAttribute('class', '')
-        }, 3000)
-    }
-
-    // Add pins when posts load
-    watch(posts, newPosts => {
-        posts.value.forEach(post => {
-            const lat = post?.latitude
-            const lon = post?.longitude
-            if (lat && lon) {
-                Leaflet.marker([lat, lon], {
-                    icon: Leaflet.icon({
-                        iconUrl: markerIconPng,
-                        shadowUrl: markerShadowPng,
-                    }),
-                })
-                    .on('click', () => {
-                        markerClick(post)
-                    })
-                    .addTo(LMap)
-            } else {
-                console.error('Could not find latitude or longitude for this post', post)
-            }
-        })
-    })
-
-    // Geolocation permissions request
-    console.debug('permissions obj', navigator.permissions)
-    navigator.permissions.query({ name: 'geolocation' }).then(res => {
-        console.log('permissions: query results', res)
-        if (res.state === 'prompt') {
-            getGeolocationPermission()
-        } else if (res.state === 'granted') {
-            getGeolocationPermission()
-        }
-    })
-
+    //
+    // Methods
+    //
     function getGeolocationPermission() {
         const options = {
             enableHighAccuracy: true,
@@ -248,21 +183,6 @@
         LMap.setView([post.latitude, post.longitude], 16)
     }
 
-    // update map when coordiantes are in
-    watch(currentLatLon, newCoords => {
-        // delay to see animation
-        setTimeout(() => {
-            LMap.setView(currentLatLon.value, zoomLevel.value)
-        }, 500)
-    })
-
-    const actionSheetButtons = [
-        {
-            text: 'Logout',
-            handler: logout,
-        },
-    ]
-
     function logout() {
         signOut(auth)
             .then(() => {
@@ -272,6 +192,91 @@
                 console.error(err)
             })
     }
+
+    function markerClick(post: any) {
+        console.debug('markerClick', post, listingRefs)
+        listingRefs[post.id].scrollIntoView()
+        listingRefs[post.id].setAttribute('class', 'selected')
+        setTimeout(() => {
+            listingRefs[post.id].setAttribute('class', '')
+        }, 3000)
+    }
+
+    function openLoginModal() {
+        hasLoginModalOpened.value = true
+        isLoginModalOpen.value = true
+    }
+
+    function openNewPostModal() {
+        console.debug('openNewPostModal', useCurrentUser().value)
+        if (useCurrentUser().value === null) {
+            toastIsOpen.value = true
+            setTimeout(() => {
+                toastIsOpen.value = false
+            }, toastLimit)
+        } else {
+            hasNewPostModalOpened.value = true
+            isNewPostModalOpen.value = true
+        }
+    }
+
+    //
+    // Lifecycle Hooks
+    //
+    onMounted(() => {
+        // Set Map
+        LMap = Leaflet.map(map.value).setView(currentLatLon.value, zoomLevel.value)
+        Leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution:
+                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(LMap)
+
+        // Fix map loadout
+        setTimeout(() => {
+            LMap.invalidateSize()
+        }, 100)
+    })
+
+    // Add pins when posts load
+    watch(posts, newPosts => {
+        posts.value.forEach(post => {
+            const lat = post?.latitude
+            const lon = post?.longitude
+            if (lat && lon) {
+                Leaflet.marker([lat, lon], {
+                    icon: Leaflet.icon({
+                        iconUrl: markerIconPng,
+                        shadowUrl: markerShadowPng,
+                    }),
+                })
+                    .on('click', () => {
+                        markerClick(post)
+                    })
+                    .addTo(LMap)
+            } else {
+                console.error('Could not find latitude or longitude for this post', post)
+            }
+        })
+    })
+
+    // Update map when coordiantes are in
+    watch(currentLatLon, newCoords => {
+        // delay to see animation
+        setTimeout(() => {
+            LMap.setView(currentLatLon.value, zoomLevel.value)
+        }, 500)
+    })
+
+    // Geolocation permissions request
+    console.debug('permissions obj', navigator.permissions)
+    navigator.permissions.query({ name: 'geolocation' }).then(res => {
+        console.log('permissions: query results', res)
+        if (res.state === 'prompt') {
+            getGeolocationPermission()
+        } else if (res.state === 'granted') {
+            getGeolocationPermission()
+        }
+    })
 </script>
 
 <style>

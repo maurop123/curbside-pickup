@@ -13,6 +13,7 @@
                 <div id="map" ref="map" />
             </div>
 
+            <!-- Listings -->
             <div id="listings">
                 <div
                     v-for="(post, i) in postsOrdered"
@@ -39,13 +40,27 @@
 
             <!-- Modals -->
             <LoginModal trigger="loginButton" />
-            <ion-modal ref="modal" trigger="newPost">
+            <ion-modal ref="modal" trigger="newPost" @willPresent="checkLogin">
                 <NewPostModal :closeModal="closeModal" />
             </ion-modal>
 
             <!-- Action Sheet -->
             <ion-action-sheet trigger="logoutButton" :buttons="actionSheetButtons">
             </ion-action-sheet>
+
+            <!-- Toast -->
+            <ion-toast
+                :is-open="toastIsOpen"
+                message="You must be logged in to do that"
+                :duration="toastLimit"
+                position="bottom"
+                :buttons="[
+                    {
+                        text: 'dismiss',
+                        role: 'cancel',
+                    },
+                ]"
+            />
         </ion-content>
     </ion-page>
 </template>
@@ -70,6 +85,7 @@
         IonGrid,
         IonRow,
         IonCol,
+        IonToast,
     } from '@ionic/vue'
     import { add } from 'ionicons/icons'
     //leaflet
@@ -102,11 +118,11 @@
     const postsOrdered = computed(() => {
         const orderingPosts = posts.value.map(p => {
             p.distance = getDistance(p)
-            console.debug('p.distance', p.distance)
             return p
         })
         return _orderBy(posts.value, ['createdAt', 'distance'], ['desc', 'asc'])
     })
+    const toastIsOpen: Ref<boolean> = ref(false)
 
     onMounted(() => {
         // Set Map
@@ -134,7 +150,6 @@
     // Add pins when posts load
     watch(posts, newPosts => {
         posts.value.forEach(post => {
-            console.debug('Adding marker to', post)
             const lat = post?.latitude
             const lon = post?.longitude
             if (lat && lon) {
@@ -204,7 +219,6 @@
 
     function getDistance(post: any) {
         const distance = LMap.distance(currentLatLon.value, [post.latitude, post.longitude])
-        console.debug('distance', distance)
         return Math.round((distance / 1000) * 0.6213712 * 10) / 10 // km to mi rounded to 1 decimal
     }
 
@@ -238,6 +252,15 @@
                 console.error(err)
             })
     }
+
+    function checkLogin(e) {
+        e.target.dismiss()
+        toastIsOpen.value = true
+        setTimeout(() => {
+            toastIsOpen.value = false
+        }, toastLimit)
+    }
+    const toastLimit = 5000
 </script>
 
 <style>

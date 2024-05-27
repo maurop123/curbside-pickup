@@ -215,6 +215,7 @@
                 description: description.value,
                 latitude: appStore.coordinates.latitude,
                 longitude: appStore.coordinates.longitude,
+                // @ts-ignore
                 uid: useCurrentUser().value.uid,
                 version: 3,
             }

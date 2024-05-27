@@ -93,12 +93,13 @@
     const closeIcon = ref(close)
     const emit = defineEmits(['dismiss'])
 
-    function goToSignup(e) {
+    function goToSignup(e: MouseEvent) {
+        console.debug('goToSignup', e)
         e.preventDefault()
         createAccount.value = true
     }
 
-    function goToLogin(e) {
+    function goToLogin(e: MouseEvent) {
         e.preventDefault()
         createAccount.value = false
     }
@@ -151,11 +152,11 @@
         }
     }
 
-    function validateEmail(str) {
+    function validateEmail(str: string) {
         return str.length > 0
     }
 
-    function validatePassword(str) {
+    function validatePassword(str: string) {
         return str.length > 0
     }
 </script>
